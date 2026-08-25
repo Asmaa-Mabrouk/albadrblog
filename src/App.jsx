@@ -1,19 +1,11 @@
 import { useState } from 'react'
-import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
-import { ThemeProvider, useTheme } from './shared'
+import { HashRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
+import { ThemeProvider, useTheme, ArticleCard as SharedArticleCard, Newsletter } from './shared'
 import './index.css'
 import heroImg from './assets/hero_new.jpeg'
 import bookCoverImg from './assets/book_cover.png'
 import profileAvatarImg from './assets/badr_profile.png'
-import artImg1 from './assets/articles/imgi_10_tim-marshall-WUwKbFL81mw-unsplash-300x200.jpg'
-import artImg2 from './assets/articles/imgi_27_EI-copy-e1717586612304-1024x694.jpg'
-import artImg3 from './assets/articles/imgi_49_MicrosoftTeams-image-10-1024x768.jpg'
-import artImg4 from './assets/articles/imgi_20_MicrosoftTeams-image-54-768x768.png'
-import artImg5 from './assets/articles/imgi_45_pascal-van-de-vendel-RqjNWnQbWGU-unsplash-1-1024x731.jpg'
-import artImg6 from './assets/articles/imgi_42_WFH.-2-2-1536x1024.jpg'
-import artImg7 from './assets/articles/imgi_7_Picture1-1-300x300.png'
-import artImg8 from './assets/articles/imgi_17_IMG_1724-2-e1711534233915-768x1024.png'
-import artImg9 from './assets/articles/imgi_6_IMG_8349-300x199.jpg'
+import ARTICLES from './data/articles.json'
 import {
   Navbar, Footer, ScrollToTop,
   ArrowLeftIcon, CalendarIcon,
@@ -24,6 +16,7 @@ import AboutBlog from './AboutBlog'
 import Books from './Books'
 import Articles from './Articles'
 import Events from './Events'
+import Admin from './Admin'
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 function Hero() {
@@ -284,14 +277,8 @@ function Profile() {
 }
 
 // ─── Articles Grid ────────────────────────────────────────────────────────────
-const articles = [
-  { id: 1, title: 'تمكين الشباب في عصر التحديات', category: 'الشباب', excerpt: 'نقاش معمّق حول دور الجيل الجديد في صياغة مستقبل الأمة وتحدياتهم في عالم متسارع التحولات.', date: '١٠ أبريل ٢٠٢٦', featured: false, bg: 'linear-gradient(135deg, #04334c 0%, #0a6b6b 100%)', img: artImg1 },
-  { id: 2, title: 'قيادة التحول في المؤسسات', category: 'التحول', excerpt: 'كيف تقود تحولًا حقيقيًا في بيئة المؤسسات؟ أدوات ومناهج مجربة من تجارب قيادية فعلية.', date: '٢ أبريل ٢٠٢٦', featured: false, bg: 'linear-gradient(148deg, #04334c 0%, #0c7070 100%)', img: artImg2 },
-  { id: 3, title: 'هل أنت ضيف في المجلس؟', category: 'القيادة', excerpt: 'من منّا لم يقابل ذلك الحكيم الصامت الذي يتأمل عميقًا وينصت كثيرًا، ولكنه إذا نطق أبهر السامعين.', date: '٢٠ مارس ٢٠٢٦', featured: true, bg: 'linear-gradient(122deg, #04334c 0%, #085f6a 100%)', img: artImg3 },
-  { id: 4, title: 'فن القيادة الفعّالة', category: 'القيادة', excerpt: 'القيادة الحقيقية ليست لقبًا أو منصبًا، بل هي أثر تتركه في قلوب من تقودهم وعقولهم.', date: '١٥ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(140deg, #04334c 0%, #0b6870 100%)', img: artImg4 },
-  { id: 5, title: 'ريادة الأعمال في المنطقة', category: 'ريادة', excerpt: 'المنطقة تعيش لحظة تاريخية فارقة. رواد الأعمال اليوم يبنون ما سيستفيد منه الجيل القادم.', date: '٨ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(130deg, #04334c 0%, #096565 100%)', img: artImg5 },
-  { id: 6, title: 'استراتيجيات النجاح المهني', category: 'المهنة', excerpt: 'النجاح المهني لا يأتي بالصدفة، بل هو نتاج قرارات ذكية واستثمار مستمر في النمو الشخصي.', date: '١ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(145deg, #04334c 0%, #0a6b6b 100%)', img: artImg6 },
-]
+// Homepage shows the first 6 articles from the shared data source.
+const articles = ARTICLES.slice(0, 6)
 
 function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
@@ -300,7 +287,7 @@ function ArticleCard({ article }) {
   return (
     <div style={{ backgroundColor: t.surface, borderRadius: '12px', overflow: 'hidden', boxShadow: hovered ? t.shadowHover : t.shadow, transform: hovered ? 'translateY(-4px)' : 'translateY(0)', transition: 'all 0.25s ease', cursor: 'pointer' }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      onClick={() => navigate('/articles')}
+      onClick={() => navigate(`/article/${article.id}`)}
     >
       <div style={{ height: '240px', background: article.bg, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {article.img ? (
@@ -372,6 +359,79 @@ function Home() {
   )
 }
 
+// ─── Single Article Page ──────────────────────────────────────────────────────
+function ArticlePage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { t } = useTheme()
+  const article = ARTICLES.find(a => String(a.id) === String(id))
+
+  if (!article) {
+    return (
+      <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+        <Navbar />
+        <main style={{ paddingTop: '140px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '18px', color: t.text }}>لم يتم العثور على المقال.</p>
+          <button onClick={() => navigate('/articles')} style={{ marginTop: '16px', background: 'none', border: 'none', color: '#14b8a6', cursor: 'pointer', fontFamily: 'Cairo, sans-serif', fontSize: '15px', fontWeight: '700' }}>
+            العودة إلى المقالات
+          </button>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  return (
+    <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
+      <Navbar />
+      <main style={{ paddingTop: '64px' }}>
+        <div style={{
+          height: '360px', background: article.bg, position: 'relative',
+          display: 'flex', alignItems: 'flex-end', overflow: 'hidden',
+        }}>
+          {article.img && (
+            <>
+              <img src={article.img} alt={article.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.25) 0%, rgba(4,51,76,0.85) 100%)' }} />
+            </>
+          )}
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 24px 40px', width: '100%', textAlign: 'right' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginBottom: '14px' }}>
+              <span style={{ backgroundColor: '#14b8a6', color: '#fff', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '600' }}>{article.category}</span>
+              {article.featured && <span style={{ backgroundColor: '#c8a96e', color: '#04334c', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '700' }}>مميز</span>}
+            </div>
+            <h1 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 4vw, 38px)', fontWeight: '700', color: '#fff', lineHeight: 1.4, marginBottom: '10px' }}>
+              {article.title}
+            </h1>
+            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>{article.date}</p>
+          </div>
+        </div>
+
+        <section style={{ padding: '56px 0 80px' }}>
+          <div style={{ maxWidth: '740px', margin: '0 auto', padding: '0 24px' }}>
+            {article.body.split('\n\n').map((para, i) => (
+              <p key={i} style={{
+                fontFamily: 'Cairo, sans-serif', fontSize: '17px', color: t.textBody,
+                lineHeight: 2.1, marginBottom: '24px', textAlign: 'right',
+              }}>{para}</p>
+            ))}
+            <button onClick={() => navigate('/articles')} style={{
+              marginTop: '20px', background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#14b8a6', fontWeight: '700',
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+            }}>
+              <ArrowLeftIcon size={13} /> العودة إلى كل المقالات
+            </button>
+          </div>
+        </section>
+
+        <Newsletter bgColor="#f0faf9" />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
 // ─── App with Router ──────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -384,7 +444,9 @@ export default function App() {
           <Route path="/blog" element={<AboutBlog />} />
           <Route path="/books" element={<Books />} />
           <Route path="/articles" element={<Articles />} />
+          <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </HashRouter>
     </ThemeProvider>

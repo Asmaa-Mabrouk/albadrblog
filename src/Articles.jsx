@@ -1,28 +1,10 @@
 import { useState } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.png'
-import artImg1 from './assets/articles/imgi_10_tim-marshall-WUwKbFL81mw-unsplash-300x200.jpg'
-import artImg2 from './assets/articles/imgi_27_EI-copy-e1717586612304-1024x694.jpg'
-import artImg3 from './assets/articles/imgi_49_MicrosoftTeams-image-10-1024x768.jpg'
-import artImg4 from './assets/articles/imgi_20_MicrosoftTeams-image-54-768x768.png'
-import artImg5 from './assets/articles/imgi_45_pascal-van-de-vendel-RqjNWnQbWGU-unsplash-1-1024x731.jpg'
-import artImg6 from './assets/articles/imgi_42_WFH.-2-2-1536x1024.jpg'
-import artImg7 from './assets/articles/imgi_7_Picture1-1-300x300.png'
-import artImg8 from './assets/articles/imgi_17_IMG_1724-2-e1711534233915-768x1024.png'
-import artImg9 from './assets/articles/imgi_6_IMG_8349-300x199.jpg'
+import ARTICLES from './data/articles.json'
 
 // ─── All articles data ─────────────────────────────────────────────────────────
-const ALL_ARTICLES = [
-  { id: 1, title: 'تمكين الشباب في عصر التحديات', category: 'الشباب', excerpt: 'نقاش معمّق حول دور الجيل الجديد في صياغة مستقبل الأمة وتحدياتهم في عالم متسارع التحولات.', date: '١٠ أبريل ٢٠٢٦', featured: false, bg: 'linear-gradient(135deg, #04334c 0%, #0a6b6b 100%)', img: artImg1 },
-  { id: 2, title: 'قيادة التحول في المؤسسات', category: 'التحول', excerpt: 'كيف تقود تحولًا حقيقيًا في بيئة المؤسسات؟ أدوات ومناهج مجربة من تجارب قيادية فعلية.', date: '٢ أبريل ٢٠٢٦', featured: false, bg: 'linear-gradient(148deg, #04334c 0%, #0c7070 100%)', img: artImg2 },
-  { id: 3, title: 'هل أنت ضيف في المجلس؟', category: 'القيادة', excerpt: 'من منّا لم يقابل ذلك الحكيم الصامت الذي يتأمل عميقًا وينصت كثيرًا، ولكنه إذا نطق أبهر السامعين.', date: '٢٠ مارس ٢٠٢٦', featured: true, bg: 'linear-gradient(122deg, #04334c 0%, #085f6a 100%)', img: artImg3 },
-  { id: 4, title: 'فن القيادة الفعّالة', category: 'القيادة', excerpt: 'القيادة الحقيقية ليست لقبًا أو منصبًا، بل هي أثر تتركه في قلوب من تقودهم وعقولهم.', date: '١٥ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(140deg, #04334c 0%, #0b6870 100%)', img: artImg4 },
-  { id: 5, title: 'ريادة الأعمال في المنطقة', category: 'ريادة', excerpt: 'المنطقة تعيش لحظة تاريخية فارقة. رواد الأعمال اليوم يبنون ما سيستفيد منه الجيل القادم.', date: '٨ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(130deg, #04334c 0%, #096565 100%)', img: artImg5 },
-  { id: 6, title: 'استراتيجيات النجاح المهني', category: 'المهنة', excerpt: 'النجاح المهني لا يأتي بالصدفة، بل هو نتاج قرارات ذكية واستثمار مستمر في النمو الشخصي.', date: '١ مارس ٢٠٢٦', featured: false, bg: 'linear-gradient(145deg, #04334c 0%, #0a6b6b 100%)', img: artImg6 },
-  { id: 7, title: 'مهارة تحتاجها حتى لو كنت عبقريًا', category: 'القيادة', excerpt: 'الذكاء وحده لا يكفي. ثمة مهارة واحدة تجعل الموهبة تُترجم إلى نتائج ملموسة في كل مرحلة.', date: '٢٢ فبراير ٢٠٢٦', featured: false, bg: 'linear-gradient(125deg, #04334c 0%, #0c6e6e 100%)', img: artImg7 },
-  { id: 8, title: 'ماذا يخبرك رمضان عن نفسك؟', category: 'الإدارة', excerpt: 'الشهر الكريم مرآة صادقة تكشف عن طبيعتك الحقيقية في إدارة الوقت والطاقة وترتيب الأولويات.', date: '١٢ فبراير ٢٠٢٦', featured: false, bg: 'linear-gradient(138deg, #04334c 0%, #085e6a 100%)', img: artImg8 },
-  { id: 9, title: 'مهارة يغفل عنها الكثيرون', category: 'المهنة', excerpt: 'مهارة التواصل الفعّال أعمق من مجرد الكلام. تعرّف على البُعد الخفي الذي يُفرق بين المؤثر والمهمَّش.', date: '3 فبراير ٢٠٢٦', featured: false, bg: 'linear-gradient(142deg, #04334c 0%, #0b6570 100%)', img: artImg9 },
-]
+const ALL_ARTICLES = ARTICLES
 
 const CATEGORIES = ['الكل', 'القيادة', 'التحول', 'الشباب', 'ريادة', 'المهنة', 'الإدارة']
 

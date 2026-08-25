@@ -2,7 +2,7 @@
  * shared.jsx — icons, brand mark, Navbar, Footer, PageHero, Newsletter, ArticleCard
  */
 import { useState, useEffect, createContext, useContext } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 // ─── Theme system ─────────────────────────────────────────────────────────────
 const light = {
@@ -497,8 +497,9 @@ export function SectionHeader({ pill, title, centered = true }) {
 export function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
   const { t } = useTheme()
+  const navigate = useNavigate()
   return (
-    <div style={{
+    <div onClick={() => navigate(`/article/${article.id}`)} style={{
       backgroundColor: t.surface, borderRadius: '12px', overflow: 'hidden',
       boxShadow: hovered ? t.shadowHover : t.shadow,
       transform: hovered ? 'translateY(-4px)' : 'translateY(0)',

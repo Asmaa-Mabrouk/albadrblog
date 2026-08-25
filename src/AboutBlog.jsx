@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Navbar, Footer, ArrowLeftIcon, CalendarIcon, useTheme } from './shared'
+import ARTICLES from './data/articles.json'
 
 // ─── Topic icons ──────────────────────────────────────────────────────────────
 const LeadershipIcon = () => (
@@ -35,6 +36,7 @@ const RocketIcon = () => (
 function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
   const { t } = useTheme()
+  const navigate = useNavigate()
   return (
     <div style={{
       backgroundColor: t.surface, borderRadius: '12px', overflow: 'hidden',
@@ -43,23 +45,33 @@ function ArticleCard({ article }) {
       transition: 'all 0.25s ease', cursor: 'pointer',
     }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      onClick={() => navigate(`/article/${article.id}`)}
     >
       {/* Image */}
       <div style={{
         height: '240px', background: article.bg, position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
       }}>
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.1,
-          backgroundImage: 'radial-gradient(circle at 25% 75%, white 1.5px, transparent 1.5px), radial-gradient(circle at 75% 25%, white 1.5px, transparent 1.5px)',
-          backgroundSize: '28px 28px',
-        }} />
-        <span style={{
-          fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '72px',
-          color: 'rgba(255,255,255,0.12)', fontWeight: '700', userSelect: 'none',
-        }}>
-          {article.title.charAt(0)}
-        </span>
+        {article.img ? (
+          <>
+            <img src={article.img} alt={article.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.18) 0%, rgba(4,51,76,0.55) 100%)' }} />
+          </>
+        ) : (
+          <>
+            <div style={{
+              position: 'absolute', inset: 0, opacity: 0.1,
+              backgroundImage: 'radial-gradient(circle at 25% 75%, white 1.5px, transparent 1.5px), radial-gradient(circle at 75% 25%, white 1.5px, transparent 1.5px)',
+              backgroundSize: '28px 28px',
+            }} />
+            <span style={{
+              fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '72px',
+              color: 'rgba(255,255,255,0.12)', fontWeight: '700', userSelect: 'none',
+            }}>
+              {article.title.charAt(0)}
+            </span>
+          </>
+        )}
         <div style={{
           position: 'absolute', top: '12px', right: '12px',
           display: 'flex', gap: '6px', justifyContent: 'flex-end',
@@ -142,20 +154,11 @@ const topics = [
   },
 ]
 
-const popularArticles = [
-  {
-    id: 3, title: 'هل أنت ضيف في المجلس؟', category: 'القيادة',
-    excerpt: 'من منّا لم يقابل ذلك الحكيم الصامت الذي يتأمل عميقًا وينصت كثيرًا، ولكنه إذا نطق أبهر السامعين.',
-    date: '٢٠ مارس ٢٠٢٦', featured: true,
-    bg: 'linear-gradient(135deg, #04334c 0%, #0d7377 100%)',
-  },
-  {
-    id: 1, title: 'تمكين الشباب في عصر التحديات', category: 'الشباب',
-    excerpt: 'نقاش معمّق حول دور الجيل الجديد في صياغة مستقبل الأمة وتحدياتهم في عالم متسارع التحولات.',
-    date: '١٠ أبريل ٢٠٢٦', featured: false,
-    bg: 'linear-gradient(135deg, #0d7377 0%, #04334c 100%)',
-  },
-]
+// Popular articles: featured ones first, then most recent, capped at 2 — kept in sync
+// with the shared article data source (src/data/articles.json), managed from /admin.
+const popularArticles = [...ARTICLES]
+  .sort((a, b) => (b.featured === a.featured ? b.id - a.id : b.featured ? 1 : -1))
+  .slice(0, 2)
 
 // ─── Section: Hero ────────────────────────────────────────────────────────────
 function BlogHero() {
