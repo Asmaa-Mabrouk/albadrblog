@@ -3,6 +3,7 @@
  */
 import { useState, useEffect, createContext, useContext } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from './LanguageContext'
 
 // ─── Theme system ─────────────────────────────────────────────────────────────
 const light = {
@@ -150,6 +151,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
   const { isDark, toggleTheme, t } = useTheme()
+  const { lang, toggleLang, t: tr } = useLanguage()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -160,11 +162,11 @@ export function Navbar() {
   useEffect(() => { setMenuOpen(false) }, [location.pathname])
 
   const navLinks = [
-    { label: 'تعرف علي', to: '/about' },
-    { label: 'عن المدونة', to: '/blog' },
-    { label: 'كتبي', to: '/books' },
-    { label: 'اقرأ مقالاتي', to: '/articles' },
-    { label: 'مؤتمرات وفعاليات', to: '/events' },
+    { label: tr('nav_about'), to: '/about' },
+    { label: tr('nav_blog'), to: '/blog' },
+    { label: tr('nav_books'), to: '/books' },
+    { label: tr('nav_articles'), to: '/articles' },
+    { label: tr('nav_events'), to: '/events' },
   ]
 
   const linkStyle = (active) => ({
@@ -230,8 +232,24 @@ export function Navbar() {
 
         {/* Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {/* Language toggle */}
+          <button
+            aria-label={lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+            onClick={toggleLang}
+            style={{
+              color: '#ffffff', background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              cursor: 'pointer', padding: '6px 12px', borderRadius: '8px',
+              fontFamily: 'Cairo, sans-serif', fontSize: '13px', fontWeight: '600',
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+          >
+            {lang === 'ar' ? 'EN' : 'AR'}
+          </button>
           {/* Search — desktop only */}
-          <button aria-label="بحث" className="desktop-only" style={{
+          <button aria-label={tr('search')} className="desktop-only" style={{
             color: '#ffffff', opacity: 0.8, background: 'none', border: 'none',
             cursor: 'pointer', padding: '8px', borderRadius: '8px',
             alignItems: 'center', transition: 'opacity 0.2s',
@@ -319,12 +337,13 @@ export function Navbar() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 export function Footer() {
+  const { t: tr } = useLanguage()
   const quickLinks = [
-    { label: 'تعرف علي', to: '/about' },
-    { label: 'المدونة', to: '/blog' },
-    { label: 'كتبي', to: '/books' },
-    { label: 'المقالات', to: '/articles' },
-    { label: 'مؤتمرات وفعاليات', to: '/events' },
+    { label: tr('nav_about'), to: '/about' },
+    { label: tr('footer_link_blog'), to: '/blog' },
+    { label: tr('nav_books'), to: '/books' },
+    { label: tr('footer_link_articles'), to: '/articles' },
+    { label: tr('nav_events'), to: '/events' },
   ]
   const socials = [
     { icon: <EmailIcon />, label: 'البريد' },
@@ -361,14 +380,14 @@ export function Footer() {
               </svg>
             </div>
             <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, maxWidth: '220px' }}>
-              مدونة متخصصة في القيادة والتحول وريادة الأعمال
+              {tr('footer_tagline')}
             </p>
           </div>
 
           {/* Quick links */}
           <div style={{ textAlign: 'right' }}>
             <h4 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '16px', fontWeight: '700', color: '#ffffff', marginBottom: '20px' }}>
-              روابط سريعة
+              {tr('footer_quick_links')}
             </h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {quickLinks.map((link) => (
@@ -387,7 +406,7 @@ export function Footer() {
           {/* Contact */}
           <div style={{ textAlign: 'right' }}>
             <h4 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '16px', fontWeight: '700', color: '#ffffff', marginBottom: '20px' }}>
-              تواصل معي
+              {tr('footer_contact_me')}
             </h4>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               {socials.map((s) => (
@@ -411,7 +430,7 @@ export function Footer() {
         {/* Copyright */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', paddingBottom: '24px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
-            © {new Date().getFullYear()} بدر بن حمود البدر — جميع الحقوق محفوظة
+            © {new Date().getFullYear()} بدر بن حمود البدر — {tr('footer_rights')}
           </p>
         </div>
       </div>

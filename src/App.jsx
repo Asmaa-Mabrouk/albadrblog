@@ -6,6 +6,7 @@ import heroImg from './assets/hero_new.jpeg'
 import bookCoverImg from './assets/book_cover.png'
 import profileAvatarImg from './assets/badr_profile.png'
 import { supabase } from './supabaseClient'
+import { LanguageProvider } from './LanguageContext'
 import {
   Navbar, Footer, ScrollToTop,
   ArrowLeftIcon, CalendarIcon,
@@ -459,20 +460,22 @@ function ArticlePage() {
 // ─── App with Router ──────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <ThemeProvider>
-      <HashRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutMe />} />
-          <Route path="/blog" element={<AboutBlog />} />
-          <Route path="/books" element={<Books />} />
-          <Route path="/articles" element={<Articles />} />
-          <Route path="/article/:id" element={<ArticlePage />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </HashRouter>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <HashRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutMe />} />
+            <Route path="/blog" element={<AboutBlog />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/articles" element={<Articles />} />
+            <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/admin" element={<Admin />} />
+          </Routes>
+        </HashRouter>
+      </ThemeProvider>
+    </LanguageProvider>
   )
 }
