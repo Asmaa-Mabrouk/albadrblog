@@ -149,6 +149,7 @@ export const AlbadrMark = ({ size = 40, color = '#14b8a6' }) => (
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [langMenuOpen, setLangMenuOpen] = useState(false)
   const location = useLocation()
   const { isDark, toggleTheme, t } = useTheme()
   const { lang, setLang, t: tr } = useLanguage()
@@ -232,34 +233,67 @@ export function Navbar() {
 
         {/* Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {/* Language toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '3px' }}>
+          {/* Language dropdown */}
+          <div style={{ position: 'relative' }}>
             <button
-              aria-label="التبديل إلى العربية"
-              onClick={() => setLang('ar')}
+              aria-label="اختر اللغة"
+              onClick={() => setLangMenuOpen(o => !o)}
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '30px', height: '26px', fontSize: '16px', lineHeight: 1,
-                background: lang === 'ar' ? 'rgba(255,255,255,0.25)' : 'transparent',
-                border: 'none', borderRadius: '6px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '6px',
+                color: '#ffffff', background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer', padding: '6px 10px', borderRadius: '8px',
+                fontFamily: 'Cairo, sans-serif', fontSize: '13px', fontWeight: '600',
                 transition: 'background-color 0.2s',
               }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
             >
-              🇸🇦
+              <span style={{ fontSize: '15px' }}>{lang === 'ar' ? '🇸🇦' : '🌐'}</span>
+              <span>{lang === 'ar' ? 'AR' : 'EN'}</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: langMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </button>
-            <button
-              aria-label="Switch to English"
-              onClick={() => setLang('en')}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '30px', height: '26px', fontSize: '16px', lineHeight: 1,
-                background: lang === 'en' ? 'rgba(255,255,255,0.25)' : 'transparent',
-                border: 'none', borderRadius: '6px', cursor: 'pointer',
-                transition: 'background-color 0.2s',
-              }}
-            >
-              🌐
-            </button>
+
+            {langMenuOpen && (
+              <>
+                <div onClick={() => setLangMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 59 }} />
+                <div style={{
+                  position: 'absolute', top: 'calc(100% + 8px)', left: 0,
+                  backgroundColor: '#ffffff', borderRadius: '10px',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.18)',
+                  minWidth: '160px', overflow: 'hidden', zIndex: 60,
+                }}>
+                  <button
+                    onClick={() => { setLang('ar'); setLangMenuOpen(false) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                      padding: '12px 16px', background: lang === 'ar' ? 'rgba(20,184,166,0.1)' : 'transparent',
+                      border: 'none', cursor: 'pointer', textAlign: 'right',
+                      fontFamily: 'Cairo, sans-serif', fontSize: '14px', fontWeight: '600', color: '#04334c',
+                    }}
+                  >
+                    <span style={{ fontSize: '18px' }}>🇸🇦</span>
+                    <span>العربية</span>
+                    {lang === 'ar' && <span style={{ marginRight: 'auto', color: '#14b8a6' }}>✓</span>}
+                  </button>
+                  <button
+                    onClick={() => { setLang('en'); setLangMenuOpen(false) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                      padding: '12px 16px', background: lang === 'en' ? 'rgba(20,184,166,0.1)' : 'transparent',
+                      border: 'none', cursor: 'pointer', textAlign: 'right',
+                      fontFamily: 'Cairo, sans-serif', fontSize: '14px', fontWeight: '600', color: '#04334c',
+                    }}
+                  >
+                    <span style={{ fontSize: '18px' }}>🌐</span>
+                    <span>English</span>
+                    {lang === 'en' && <span style={{ marginRight: 'auto', color: '#14b8a6' }}>✓</span>}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           {/* Search — desktop only */}
           <button aria-label={tr('search')} className="desktop-only" style={{
