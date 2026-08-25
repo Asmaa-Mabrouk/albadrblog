@@ -151,7 +151,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
   const { isDark, toggleTheme, t } = useTheme()
-  const { lang, toggleLang, t: tr } = useLanguage()
+  const { lang, setLang, t: tr } = useLanguage()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -233,21 +233,34 @@ export function Navbar() {
         {/* Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {/* Language toggle */}
-          <button
-            aria-label={lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-            onClick={toggleLang}
-            style={{
-              color: '#ffffff', background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              cursor: 'pointer', padding: '6px 12px', borderRadius: '8px',
-              fontFamily: 'Cairo, sans-serif', fontSize: '13px', fontWeight: '600',
-              transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-          >
-            {lang === 'ar' ? 'EN' : 'AR'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '3px' }}>
+            <button
+              aria-label="التبديل إلى العربية"
+              onClick={() => setLang('ar')}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '30px', height: '26px', fontSize: '16px', lineHeight: 1,
+                background: lang === 'ar' ? 'rgba(255,255,255,0.25)' : 'transparent',
+                border: 'none', borderRadius: '6px', cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+            >
+              🇸🇦
+            </button>
+            <button
+              aria-label="Switch to English"
+              onClick={() => setLang('en')}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '30px', height: '26px', fontSize: '16px', lineHeight: 1,
+                background: lang === 'en' ? 'rgba(255,255,255,0.25)' : 'transparent',
+                border: 'none', borderRadius: '6px', cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+            >
+              🌐
+            </button>
+          </div>
           {/* Search — desktop only */}
           <button aria-label={tr('search')} className="desktop-only" style={{
             color: '#ffffff', opacity: 0.8, background: 'none', border: 'none',
