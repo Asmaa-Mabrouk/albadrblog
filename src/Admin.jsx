@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
+import { CATEGORY_TRANSLATIONS } from './LanguageContext'
 
 const IMAGES_BUCKET = 'article-images'
 
@@ -36,7 +37,7 @@ const GRADIENT_PRESETS = [
   'linear-gradient(138deg, #04334c 0%, #085e6a 100%)',
 ]
 
-const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', title_en: '', category_en: '', excerpt_en: '', body_en: '', date_en: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
+const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', title_en: '', excerpt_en: '', body_en: '', date_en: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
 
 // ─── Login screen (real Supabase auth) ──────────────────────────────────────
 function LoginScreen() {
@@ -117,21 +118,26 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
         </p>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: formLang === 'ar' ? '1fr 1fr' : '1fr', gap: '16px', marginBottom: '16px' }}>
         <div>
           <label style={labelStyle}>{formLang === 'ar' ? 'العنوان' : 'Title'}</label>
           <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} value={form[`title${suf}`] || ''} onChange={e => setForm({ ...form, [`title${suf}`]: e.target.value })} />
         </div>
-        <div>
-          <label style={labelStyle}>{formLang === 'ar' ? 'التصنيف' : 'Category'}</label>
-          <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} list={formLang === 'ar' ? 'categories' : undefined} value={form[`category${suf}`] || ''} onChange={e => setForm({ ...form, [`category${suf}`]: e.target.value })} />
-          {formLang === 'ar' && (
+        {formLang === 'ar' && (
+          <div>
+            <label style={labelStyle}>التصنيف</label>
+            <input dir="rtl" style={inputStyle} list="categories" value={form.category || ''} onChange={e => setForm({ ...form, category: e.target.value })} />
             <datalist id="categories">
               {categories.map(c => <option key={c} value={c} />)}
             </datalist>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+      {formLang === 'en' && form.category && (
+        <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '-10px', marginBottom: '16px' }}>
+          Category: <strong>{CATEGORY_TRANSLATIONS[form.category] || form.category}</strong> (translated automatically — set once in code, not per article)
+        </p>
+      )}
 
       <div style={{ marginBottom: '16px' }}>
         <label style={labelStyle}>{formLang === 'ar' ? 'الملخص (يظهر في بطاقة المقال)' : 'Excerpt (shown on the article card)'}</label>
@@ -346,7 +352,7 @@ function Dashboard({ userEmail }) {
         title: form.title, category: form.category, excerpt: form.excerpt,
         body: form.body, date: form.date, featured: form.featured,
         bg: form.bg, img: imgPath,
-        title_en: form.title_en || null, category_en: form.category_en || null,
+        title_en: form.title_en || null,
         excerpt_en: form.excerpt_en || null, body_en: form.body_en || null,
         date_en: form.date_en || null,
       }

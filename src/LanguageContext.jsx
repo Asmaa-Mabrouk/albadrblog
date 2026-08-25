@@ -65,11 +65,22 @@ export function localizeArticle(article, lang) {
   return {
     ...article,
     title: article.title_en || article.title,
-    category: article.category_en || article.category,
+    category: CATEGORY_TRANSLATIONS[article.category] || article.category,
     excerpt: article.excerpt_en || article.excerpt,
     body: article.body_en || article.body,
     date: article.date_en || article.date,
   }
+}
+
+// Categories are a small fixed set — translated once here (like a WordPress
+// taxonomy translation), not duplicated per article.
+export const CATEGORY_TRANSLATIONS = {
+  'القيادة': 'Leadership',
+  'التحول': 'Transformation',
+  'الشباب': 'Youth',
+  'ريادة': 'Entrepreneurship',
+  'المهنة': 'Career',
+  'الإدارة': 'Management',
 }
 
 // ─── Page content blocks ─────────────────────────────────────────────────────
