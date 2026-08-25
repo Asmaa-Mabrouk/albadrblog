@@ -6,7 +6,7 @@ import heroImg from './assets/hero_new.jpeg'
 import bookCoverImg from './assets/book_cover.png'
 import profileAvatarImg from './assets/badr_profile.png'
 import { supabase } from './supabaseClient'
-import { LanguageProvider, useLanguage, localizeArticle } from './LanguageContext'
+import { LanguageProvider, useLanguage, localizeArticle, usePageContent } from './LanguageContext'
 import {
   Navbar, Footer, ScrollToTop,
   ArrowLeftIcon, CalendarIcon,
@@ -220,6 +220,7 @@ function BookFeature() {
 function Profile() {
   const navigate = useNavigate()
   const { t } = useTheme()
+  const { get } = usePageContent('home')
   const socials = [
     { icon: <EmailIcon />, label: 'البريد الإلكتروني' },
     { icon: <LinkedInIcon />, label: 'لينكد إن' },
@@ -245,11 +246,11 @@ function Profile() {
           />
         </div>
         <span style={{ display: 'inline-block', backgroundColor: 'rgba(20,184,166,0.15)', color: '#0d7377', fontSize: '12px', fontWeight: '600', padding: '5px 14px', borderRadius: '999px', marginBottom: '16px', fontFamily: 'Cairo, sans-serif' }}>نبذة عني</span>
-        <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: '700', color: t.text, marginBottom: '12px', transition: 'color 0.3s' }}>بدر بن حمود البدر</h2>
-        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#0d7377', letterSpacing: '0.08em', marginBottom: '32px' }}>عضو مجلس إدارة · مؤلف · متحدث رئيسي</p>
+        <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: '700', color: t.text, marginBottom: '12px', transition: 'color 0.3s' }}>{get('profile_name', 'بدر بن حمود البدر')}</h2>
+        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#0d7377', letterSpacing: '0.08em', marginBottom: '32px' }}>{get('profile_title', 'عضو مجلس إدارة · مؤلف · متحدث رئيسي')}</p>
 
         <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 1.85, maxWidth: '560px', marginBottom: '32px', transition: 'color 0.3s' }}>
-          مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال. أرحب بكم في مدونتي التي أشارككم فيها تجاربي ومحطاتي.
+          {get('profile_bio', 'مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال. أرحب بكم في مدونتي التي أشارككم فيها تجاربي ومحطاتي.')}
         </p>
 
         <button

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from './supabaseClient'
 
 // ─── Translation dictionary ─────────────────────────────────────────────────
 // Phase 1: static/shared UI strings only (nav, footer, common buttons).
@@ -69,4 +70,29 @@ export function localizeArticle(article, lang) {
     body: article.body_en || article.body,
     date: article.date_en || article.date,
   }
+}
+
+// ─── Page content blocks ─────────────────────────────────────────────────────
+// Fetches admin-editable bilingual text for a given page (e.g. 'home') from
+// the page_content table. Returns a function get(sectionKey, fallbackAr) that
+// picks the right language and falls back to hardcoded text if the row
+// doesn't exist yet (so pages never break before being seeded/edited).
+export function usePageContent(page) {
+  const { lang } = useLanguage()
+  const [rows, setRows] = useState(null)
+
+  useEffect(() => {
+    supabase.from('page_content').select('*').eq('page', page).then(({ data }) => {
+      setRows(data || [])
+    })
+  }, [page])
+
+  function get(sectionKey, fallbackAr = '') {
+    const row = (rows || []).find(r => r.section_key === sectionKey)
+    if (!row) return fallbackAr
+    if (lang === 'en') return row.content_en || row.content_ar || fallbackAr
+    return row.content_ar || fallbackAr
+  }
+
+  return { get, loading: rows === null }
 }

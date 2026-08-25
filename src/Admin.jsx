@@ -212,8 +212,106 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
   )
 }
 
+// ─── Page content editor (Home, About, Books, Events...) ────────────────────
+// Config of editable pages, added incrementally. Each entry lists its
+// section keys with an Arabic label so the admin form is self-explanatory.
+const PAGES_CONFIG = {
+  home: {
+    label: 'الصفحة الرئيسية',
+    sections: [
+      { key: 'profile_name', label: 'الاسم' },
+      { key: 'profile_title', label: 'المسمى الوظيفي' },
+      { key: 'profile_bio', label: 'نبذة عني (النص)' },
+    ],
+  },
+}
+
+function PageContentEditor({ pageKey }) {
+  const config = PAGES_CONFIG[pageKey]
+  const [values, setValues] = useState(null) // { [section_key]: { ar, en } }
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
+  async function load() {
+    setError('')
+    const { data, error } = await supabase.from('page_content').select('*').eq('page', pageKey)
+    if (error) { setError(error.message); return }
+    const map = {}
+    for (const section of config.sections) {
+      const row = (data || []).find(r => r.section_key === section.key)
+      map[section.key] = { ar: row?.content_ar || '', en: row?.content_en || '' }
+    }
+    setValues(map)
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load() }, [pageKey])
+
+  async function handleSave() {
+    setSaving(true)
+    setError('')
+    try {
+      const rows = config.sections.map(s => ({
+        page: pageKey, section_key: s.key,
+        content_ar: values[s.key].ar, content_en: values[s.key].en,
+      }))
+      const { error } = await supabase.from('page_content').upsert(rows, { onConflict: 'page,section_key' })
+      if (error) throw error
+      setNotice('تم الحفظ! التغييرات ظاهرة على الموقع الآن مباشرة.')
+      setTimeout(() => setNotice(''), 6000)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!values) return <p style={{ color: '#6b7280' }}>جارٍ التحميل...</p>
+
+  return (
+    <div>
+      {notice && (
+        <div style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
+          {notice}
+        </div>
+      )}
+      {error && (
+        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
+          {error}
+        </div>
+      )}
+      {config.sections.map(section => (
+        <div key={section.key} style={{ backgroundColor: '#fff', borderRadius: '10px', padding: '18px 20px', marginBottom: '14px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+          <p style={{ fontWeight: '700', fontSize: '14px', color: '#111827', marginBottom: '12px' }}>{section.label}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div>
+              <label style={labelStyle}>🇸🇦 العربية</label>
+              <textarea dir="rtl" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
+                value={values[section.key].ar}
+                onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], ar: e.target.value } })}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>🌐 English</label>
+              <textarea dir="ltr" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
+                value={values[section.key].en}
+                onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], en: e.target.value } })}
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+      <button style={{ ...buttonPrimary, opacity: saving ? 0.6 : 1 }} disabled={saving} onClick={handleSave}>
+        {saving ? 'جارٍ الحفظ...' : 'حفظ ونشر'}
+      </button>
+    </div>
+  )
+}
+
 // ─── Dashboard ───────────────────────────────────────────────────────────────
 function Dashboard({ userEmail }) {
+  const [view, setView] = useState('articles') // 'articles' | 'home'
   const [articles, setArticles] = useState(null)
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // null | 'new' | article
@@ -293,9 +391,9 @@ function Dashboard({ userEmail }) {
     <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: '#f8fafc', padding: '32px 24px' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#111827' }}>إدارة المقالات</h1>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#111827' }}>لوحة الإدارة</h1>
           <div style={{ display: 'flex', gap: '10px' }}>
-            {!editing && (
+            {view === 'articles' && !editing && (
               <button style={buttonPrimary} onClick={() => setEditing('new')}>+ مقال جديد</button>
             )}
             <button style={buttonSecondary} onClick={() => supabase.auth.signOut()}>تسجيل الخروج</button>
@@ -303,52 +401,75 @@ function Dashboard({ userEmail }) {
         </div>
         <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '20px' }}>مسجّل الدخول باسم: {userEmail}</p>
 
-        {notice && (
-          <div style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
-            {notice}
-          </div>
-        )}
-        {error && (
-          <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
-            {error}
-          </div>
-        )}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid #e5e7eb' }}>
+          <button onClick={() => setView('articles')} style={{
+            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
+            fontSize: '14px', fontWeight: '600',
+            color: view === 'articles' ? '#14b8a6' : '#9ca3af',
+            borderBottom: view === 'articles' ? '2px solid #14b8a6' : '2px solid transparent',
+            marginBottom: '-1px',
+          }}>المقالات</button>
+          <button onClick={() => setView('home')} style={{
+            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
+            fontSize: '14px', fontWeight: '600',
+            color: view === 'home' ? '#14b8a6' : '#9ca3af',
+            borderBottom: view === 'home' ? '2px solid #14b8a6' : '2px solid transparent',
+            marginBottom: '-1px',
+          }}>الصفحة الرئيسية</button>
+        </div>
 
-        {editing && (
-          <ArticleForm
-            initial={editing === 'new' ? EMPTY_FORM : { ...editing }}
-            categories={categories}
-            saving={saving}
-            onCancel={() => setEditing(null)}
-            onSave={handleSave}
-          />
-        )}
+        {view === 'home' && <PageContentEditor pageKey="home" />}
 
-        {articles === null && !error && <p style={{ color: '#6b7280' }}>جارٍ التحميل...</p>}
-
-        {articles && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {articles.map(article => (
-              <div key={article.id} style={{
-                backgroundColor: '#fff', borderRadius: '10px', padding: '14px 16px',
-                display: 'flex', alignItems: 'center', gap: '14px',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-              }}>
-                <div style={{
-                  width: '64px', height: '64px', borderRadius: '8px', flexShrink: 0,
-                  background: article.bg, backgroundImage: article.img ? `url(${article.img})` : undefined,
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: '700', color: '#111827', fontSize: '14px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{article.title}</p>
-                  <p style={{ fontSize: '12px', color: '#6b7280' }}>{article.category} · {article.date}{article.featured ? ' · مميز' : ''}</p>
-                </div>
-                <button style={buttonSecondary} onClick={() => setEditing(article)}>تعديل</button>
-                <button style={buttonDanger} onClick={() => handleDelete(article)}>حذف</button>
+        {view === 'articles' && (
+          <>
+            {notice && (
+              <div style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
+                {notice}
               </div>
-            ))}
-            {articles.length === 0 && <p style={{ color: '#6b7280', textAlign: 'center', padding: '40px 0' }}>لا توجد مقالات بعد.</p>}
-          </div>
+            )}
+            {error && (
+              <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
+                {error}
+              </div>
+            )}
+
+            {editing && (
+              <ArticleForm
+                initial={editing === 'new' ? EMPTY_FORM : { ...editing }}
+                categories={categories}
+                saving={saving}
+                onCancel={() => setEditing(null)}
+                onSave={handleSave}
+              />
+            )}
+
+            {articles === null && !error && <p style={{ color: '#6b7280' }}>جارٍ التحميل...</p>}
+
+            {articles && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {articles.map(article => (
+                  <div key={article.id} style={{
+                    backgroundColor: '#fff', borderRadius: '10px', padding: '14px 16px',
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                  }}>
+                    <div style={{
+                      width: '64px', height: '64px', borderRadius: '8px', flexShrink: 0,
+                      background: article.bg, backgroundImage: article.img ? `url(${article.img})` : undefined,
+                      backgroundSize: 'cover', backgroundPosition: 'center',
+                    }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontWeight: '700', color: '#111827', fontSize: '14px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{article.title}</p>
+                      <p style={{ fontSize: '12px', color: '#6b7280' }}>{article.category} · {article.date}{article.featured ? ' · مميز' : ''}</p>
+                    </div>
+                    <button style={buttonSecondary} onClick={() => setEditing(article)}>تعديل</button>
+                    <button style={buttonDanger} onClick={() => handleDelete(article)}>حذف</button>
+                  </div>
+                ))}
+                {articles.length === 0 && <p style={{ color: '#6b7280', textAlign: 'center', padding: '40px 0' }}>لا توجد مقالات بعد.</p>}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
