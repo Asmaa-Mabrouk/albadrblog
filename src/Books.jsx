@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navbar, Footer, PageHero, SectionHeader, ArrowLeftIcon, useTheme } from './shared'
+import { Navbar, Footer, PageHero, SectionHeader, ArrowLeftIcon, LinkedInIcon, TwitterIcon, useTheme } from './shared'
 import bookCoverImg from './assets/book_cover.png'
 import padWithHandImg from './assets/pad_with_hand.png'
 import profileAvatarImg from './assets/badr_profile.png'
@@ -63,124 +63,83 @@ function BookCover({ tilt = true }) {
 }
 
 // ─── Author intro ─────────────────────────────────────────────────────────────
+const InstagramIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+)
+
 function AuthorIntro() {
   const { t } = useTheme()
   return (
     <section style={{
       backgroundColor: t.bg,
       padding: '72px 0 64px',
-      position: 'relative',
-      overflow: 'hidden',
     }}>
-      {/* Soft background wash */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'radial-gradient(ellipse at 30% 50%, rgba(20,184,166,0.05) 0%, transparent 60%)',
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{ maxWidth: '1060px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)', position: 'relative', zIndex: 1 }}>
-        <div style={{
-          display: 'flex', flexWrap: 'wrap',
-          alignItems: 'center', gap: '56px',
-        }}>
-
-          {/* ── Left: Avatar column ── */}
-          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-
-            <div style={{
-              width: '196px', height: '196px', borderRadius: '50%',
-              outline: '4px solid #14b8a6',
-              outlineOffset: '4px',
-              overflow: 'hidden',
-              boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
-            }}>
-              <img
-                src={profileAvatarImg}
-                alt="بدر بن حمود البدر"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-
-            {/* Name tag below photo */}
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
-              <p style={{
-                fontFamily: 'Playfair Display, Cairo, sans-serif',
-                fontSize: '16px', fontWeight: '700',
-                color: t.text, marginBottom: '4px',
-              }}>
-                بدر بن حمود البدر
-              </p>
-              <p style={{
-                fontFamily: 'Cairo, sans-serif', fontSize: '13px',
-                color: '#14b8a6', fontWeight: '600',
-              }}>
-                قائد · مؤلف · متحدث
-              </p>
-            </div>
+      <div style={{ maxWidth: '780px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{
+            width: '150px', height: '150px', borderRadius: '50%',
+            outline: '4px solid #14b8a6', outlineOffset: '4px',
+            overflow: 'hidden', margin: '0 auto 20px',
+            boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
+            filter: 'grayscale(1)',
+          }}>
+            <img src={profileAvatarImg} alt="بدر بن حمود البدر" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
           </div>
-
-          {/* ── Right: Text column ── */}
-          <div style={{ flex: '1 1 340px', textAlign: 'right', position: 'relative' }}>
-
-            {/* Giant decorative quote mark */}
-            <div style={{
-              position: 'absolute', top: '-32px', right: '-16px',
-              fontFamily: 'Georgia, serif', fontSize: '160px',
-              color: 'rgba(20,184,166,0.08)', lineHeight: 1,
-              userSelect: 'none', pointerEvents: 'none',
-            }}>«</div>
-
-            {/* Welcome heading */}
-            <h2 style={{
-              fontFamily: 'Playfair Display, Cairo, sans-serif',
-              fontSize: 'clamp(22px, 2.8vw, 30px)',
-              fontWeight: '700', color: t.text,
-              lineHeight: 1.6, marginBottom: '28px',
-              position: 'relative', zIndex: 1,
-            }}>
-              أرحب بكم هنا في{' '}
-              <span style={{ color: '#14b8a6' }}>مدونتي</span>
-              {' '}والتي أدوّن بها بعضًا من{' '}
-              <span style={{ color: '#14b8a6' }}>تجاربي ومحطاتي</span>
-              {' '}في رحلة{' '}
-              <span style={{ color: '#c8a96e' }}>آمل أن تتكلل بالنجاح.</span>
-            </h2>
-
-            {/* Gold thin divider */}
-            <div style={{
-              width: '48px', height: '2px',
-              background: 'linear-gradient(to left, #c8a96e, #e8c98e)',
-              borderRadius: '999px', marginBottom: '24px', marginRight: 0,
-            }} />
-
-            {/* Para 1 */}
-            <p style={{
-              fontFamily: 'Cairo, sans-serif',
-              fontSize: '15px', color: t.textBody,
-              lineHeight: 1.95, marginBottom: '18px', textAlign: 'right',
-            }}>
-              اسمي <span style={{ fontWeight: '700', color: t.text }}>بدر بن حمود البدر</span>، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال، بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.
-            </p>
-
-            {/* Para 2 */}
-            <p style={{
-              fontFamily: 'Cairo, sans-serif',
-              fontSize: '15px', color: t.textBody,
-              lineHeight: 1.95, marginBottom: '32px', textAlign: 'right',
-            }}>
-              بالنسبة لي، المواقف الصعبة هي{' '}
-              <span style={{ color: '#14b8a6', fontWeight: '600' }}>مصدر تحفيز</span>
-              ؛ فأنا أستمتع بالعمل في فترات عدم اليقين وفي أوقات التغيير السريع، وأجدها فرصة لتحليل الواقع وتصوّر المستقبل وحل المشكلات.
-            </p>
-
-            {/* Bottom accent line */}
-            <div style={{
-              height: '1px',
-              background: 'linear-gradient(to left, rgba(20,184,166,0.4), transparent)',
-            }} />
+          <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '22px', fontWeight: '700', color: t.text, marginBottom: '4px' }}>
+            تعريف بالمؤلف
+          </h2>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted, marginBottom: '12px' }}>
+            بدر بن حمود البدر
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            {[LinkedInIcon, TwitterIcon, InstagramIcon].map((Icon, i) => (
+              <span key={i} style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                backgroundColor: t.bgSoft, color: t.textMuted,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon />
+              </span>
+            ))}
           </div>
+        </div>
 
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '18px' }}>
+            منذ طفولتي وأنا شغوف بالقراءة (كانوا يسموّنني دودة الكتب) إلى جانب النشاط الرياضي، والتقنية. فقد بدأت ببرمجة أنظمة الحاسب للآخرين لأتمتة أعمالهم منذ كنت في المرحلة الثانوية.
+          </p>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '18px' }}>
+            بدأت مسيرتي الوظيفية أكاديميًا قبل أن أنتقل إلى عالم الأعمال الذي وجدت فيه نفسي، فأنا أثق بأن كلاً منا خُلق لما ميسر له. وفي رحلتي التي آمل أن تلهمك، تعلمت من نجاحاتي وفشلي الكثير.
+          </p>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '18px' }}>
+            في الوقت الحالي، أشغل منصب الرئيس التنفيذي لمؤسسة محمد بن سلمان "مسك"، وتوليت قبل ذلك قيادة شركة دو للضيافة، وصنفت ضمن أفضل 100 رئيس تنفيذي في الشرق الأوسط، وأقوى 20 تنفيذيًا في مجال الضيافة في منطقة الخليج. ومن قبلها شركة سيسكو سيستمز خلال توسعها في المملكة العربية السعودية، ثم قمت بتطوير أعمال الشركة في منطقة الشرق الأوسط وشمال أفريقيا. وقد نلت بفضل الله أثناء عملي جوائز عديدة، منها جائزة أفضل مدير عام لمنطقة وأفضل بيئة عمل (مرتين).
+          </p>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '18px' }}>
+            كما توليت قبل ذلك منصب الرئيس التنفيذي لشركة أول نت أثناء تكوينها، والتي كانت ثمرة اندماج ثلاث شركات، والتي اشترتها لاحقًا شركة اتصالات كبرى - وقبلها كنت قد شغلت منصب الرئيس التنفيذي والمؤسس للشركة العالمية للاتصالات والإنترنت.
+          </p>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '18px' }}>
+            كان مشواري الجامعي قد بدأ في جامعة الملك فهد للبترول والمعادن حيث تخرجت بدرجة البكالوريوس في علوم الحاسب بمرتبة الشرف الأولى، ثم حصلت على درجتي الماجستير والدكتوراه ودبلومًا في الإدارة من جامعة واشنطن في مدينة سياتل بالولايات المتحدة. وبعدها، انتظمت في عدة دورات وبرامج قيادية في جامعات مثل: أوكسفورد، وكورنيل، وجورج واشنطن.
+          </p>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 2, marginBottom: '32px' }}>
+            أحب أن أشغل نفسي بنشر المعرفة عبر شبكات التواصل الاجتماعية، وقد عدت مؤخرًا إلى ممارسة هواية قديمة هي التصوير.
+          </p>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <button style={{
+            backgroundColor: '#14b8a6', color: '#fff', border: 'none',
+            padding: '12px 32px', fontSize: '15px', fontFamily: 'Cairo, sans-serif', fontWeight: '600',
+            borderRadius: '6px', cursor: 'pointer', transition: 'background-color 0.2s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#0d9488'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#14b8a6'}
+          >
+            اشتر الكتاب
+          </button>
         </div>
       </div>
     </section>
@@ -628,99 +587,69 @@ function CtaStrip() {
 }
 
 // ─── Newsletter — identical to the "عن المدونة" page ──────────────────────────
-function Newsletter() {
-  const [email, setEmail] = useState('')
+function ContactCustomerService() {
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
+  const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const { t } = useTheme()
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (email && name) setSubmitted(true)
-  }
 
   const inputStyle = {
     fontFamily: 'Cairo, sans-serif', fontSize: '15px',
-    color: t.text, backgroundColor: t.inputBg,
-    border: `1px solid ${t.border}`,
-    borderRadius: '6px', padding: '10px 14px',
-    outline: 'none', width: '100%',
-    transition: 'border-color 0.2s',
-    textAlign: 'right', direction: 'rtl',
-    boxSizing: 'border-box',
+    color: '#04334c', backgroundColor: '#fff',
+    border: 'none', borderRadius: '4px', padding: '12px 16px',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
+  }
+  const labelStyle = { fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#fff', display: 'block', marginBottom: '8px', fontWeight: '600' }
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (name && email && message) setSubmitted(true)
   }
 
   return (
-    <section style={{ backgroundColor: t.bg, padding: '0 0 80px' }}>
+    <section style={{ backgroundColor: '#04334c', padding: '80px 0' }}>
       <div style={{ maxWidth: '780px', margin: '0 auto', padding: '0 24px', textAlign: 'right' }}>
-        <p style={{
-          fontFamily: 'Cairo, sans-serif',
-          fontSize: '18px', fontWeight: '700', color: t.text,
-          marginBottom: '24px',
-        }}>
-          اشترك في النشرة البريدية للمدونة
+        <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: '700', color: '#fff', marginBottom: '10px' }}>
+          للتواصل مع خدمة العملاء
+        </h2>
+        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.75)', marginBottom: '32px' }}>
+          الرجاء ملئ النموذج التالي:
         </p>
 
         {submitted ? (
-          <div style={{
-            backgroundColor: t.bgSoft, borderRadius: '16px', padding: '32px 24px',
-            boxShadow: t.shadow,
-            border: `1.5px solid ${t.borderSoft}`,
-          }}>
-            <div style={{
-              width: '52px', height: '52px', borderRadius: '50%',
-              backgroundColor: 'rgba(20,184,166,0.12)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px',
-            }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="#14b8a6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <p style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '20px', fontWeight: '700', color: t.text, marginBottom: '8px' }}>
-              شكرًا على اشتراكك!
-            </p>
-            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted }}>
-              سيصلك أول محتوى جديد قريبًا بإذن الله.
-            </p>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '28px', textAlign: 'center' }}>
+            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#fff', fontWeight: '700' }}>شكرًا لتواصلك معنا!</p>
+            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginTop: '6px' }}>سنرد عليك في أقرب وقت ممكن.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '400px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
             <div>
-              <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
-                البريد الإلكتروني
-              </label>
-              <input type="email" placeholder="البريد الإلكتروني" value={email}
-                onChange={e => setEmail(e.target.value)} required
-                dir="ltr" style={{ ...inputStyle, textAlign: 'left' }}
-                onFocus={e => e.target.style.borderColor = '#14b8a6'}
-                onBlur={e => e.target.style.borderColor = t.border}
-              />
+              <label style={labelStyle}>الاسم</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={inputStyle} />
             </div>
             <div>
-              <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
-                الاسم
-              </label>
-              <input type="text" placeholder="اسمك" value={name}
-                onChange={e => setName(e.target.value)} required style={inputStyle}
-                onFocus={e => e.target.style.borderColor = '#14b8a6'}
-                onBlur={e => e.target.style.borderColor = t.border}
-              />
+              <label style={labelStyle}>البريد الإلكتروني</label>
+              <input type="email" dir="ltr" value={email} onChange={e => setEmail(e.target.value)} required style={{ ...inputStyle, textAlign: 'right' }} />
+            </div>
+            <div>
+              <label style={labelStyle}>الموضوع</label>
+              <input type="text" value={subject} onChange={e => setSubject(e.target.value)} style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>الرسالة</label>
+              <textarea rows={6} value={message} onChange={e => setMessage(e.target.value)} required style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
             <div>
               <button type="submit" style={{
-                backgroundColor: '#14b8a6', color: '#ffffff',
-                padding: '10px 28px', fontSize: '15px',
-                fontFamily: 'Cairo, sans-serif', fontWeight: '600',
-                border: 'none', borderRadius: '6px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
+                backgroundColor: '#14b8a6', color: '#fff', border: 'none',
+                padding: '12px 32px', fontSize: '15px', fontFamily: 'Cairo, sans-serif', fontWeight: '600',
+                borderRadius: '4px', cursor: 'pointer', transition: 'background-color 0.2s',
               }}
                 onMouseEnter={e => e.currentTarget.style.backgroundColor = '#0d9488'}
                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#14b8a6'}
               >
-                انضم الآن
+                إرسال
               </button>
             </div>
           </form>
@@ -745,7 +674,7 @@ export default function Books() {
         <DigitalEdition />
         <ChaptersGrid />
         <CtaStrip />
-        <Newsletter />
+        <ContactCustomerService />
       </main>
       <Footer />
     </div>
