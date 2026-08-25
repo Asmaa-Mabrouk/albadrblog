@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.png'
 import { supabase } from './supabaseClient'
+import { useLanguage, localizeArticle } from './LanguageContext'
 
 const ALL_CATEGORY = 'الكل'
 
@@ -146,19 +147,19 @@ function FilterBar({ active, onSelect, categories }) {
         overflowX: 'auto', justifyContent: 'center',
         scrollbarWidth: 'none',
       }}>
-        {categories.map(cat => (
-          <button key={cat} onClick={() => onSelect(cat)} style={{
-            backgroundColor: active === cat ? '#14b8a6' : t.bgSoft,
-            color: active === cat ? '#ffffff' : '#0d7377',
+        {categories.map((cat, i) => (
+          <button key={cat} onClick={() => onSelect(i === 0 ? null : cat)} style={{
+            backgroundColor: (i === 0 ? active === null : active === cat) ? '#14b8a6' : t.bgSoft,
+            color: (i === 0 ? active === null : active === cat) ? '#ffffff' : '#0d7377',
             border: 'none', borderRadius: '999px',
             padding: '8px 20px', fontSize: '14px',
             fontFamily: 'Cairo, sans-serif', fontWeight: '600',
             cursor: 'pointer', whiteSpace: 'nowrap',
             transition: 'background-color 0.2s, color 0.2s, transform 0.15s',
-            boxShadow: active === cat ? '0 3px 12px rgba(20,184,166,0.3)' : 'none',
+            boxShadow: (i === 0 ? active === null : active === cat) ? '0 3px 12px rgba(20,184,166,0.3)' : 'none',
           }}
-            onMouseEnter={e => { if (active !== cat) e.currentTarget.style.backgroundColor = 'rgba(20,184,166,0.15)' }}
-            onMouseLeave={e => { if (active !== cat) e.currentTarget.style.backgroundColor = t.bgSoft }}
+            onMouseEnter={e => { if (!(i === 0 ? active === null : active === cat)) e.currentTarget.style.backgroundColor = 'rgba(20,184,166,0.15)' }}
+            onMouseLeave={e => { if (!(i === 0 ? active === null : active === cat)) e.currentTarget.style.backgroundColor = t.bgSoft }}
           >
             {cat}
           </button>
@@ -227,9 +228,10 @@ function Pagination() {
 
 // ─── Page root ────────────────────────────────────────────────────────────────
 export default function Articles() {
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY)
+  const [activeCategory, setActiveCategory] = useState(null) // null = "all"
   const [articles, setArticles] = useState(null)
   const { t } = useTheme()
+  const { lang, t: tr } = useLanguage()
 
   useEffect(() => {
     supabase.from('articles').select('*').order('id', { ascending: false }).then(({ data }) => {
@@ -237,10 +239,12 @@ export default function Articles() {
     })
   }, [])
 
-  const categories = [ALL_CATEGORY, ...new Set((articles || []).map(a => a.category))]
-  const filtered = !articles ? [] : activeCategory === ALL_CATEGORY
-    ? articles
-    : articles.filter(a => a.category === activeCategory)
+  const localized = (articles || []).map(a => localizeArticle(a, lang))
+  const allLabel = tr('all_category')
+  const categories = [allLabel, ...new Set(localized.map(a => a.category))]
+  const filtered = !articles ? [] : activeCategory === null
+    ? localized
+    : localized.filter(a => a.category === activeCategory)
 
   return (
     <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>

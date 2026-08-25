@@ -36,7 +36,7 @@ const GRADIENT_PRESETS = [
   'linear-gradient(138deg, #04334c 0%, #085e6a 100%)',
 ]
 
-const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
+const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', title_en: '', category_en: '', excerpt_en: '', body_en: '', date_en: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
 
 // ─── Login screen (real Supabase auth) ──────────────────────────────────────
 function LoginScreen() {
@@ -76,6 +76,7 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
   const [form, setForm] = useState(initial)
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(initial.img || '')
+  const [formLang, setFormLang] = useState('ar')
   const fileInputRef = useRef(null)
 
   function handleImageChange(e) {
@@ -85,47 +86,76 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
     setImagePreview(URL.createObjectURL(file))
   }
 
+  const suf = formLang === 'en' ? '_en' : ''
+
   return (
     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', marginBottom: '24px' }}>
       <h2 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '18px', color: '#111827' }}>
         {form.id ? 'تعديل مقال' : 'مقال جديد'}
       </h2>
 
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', borderBottom: '1px solid #e5e7eb' }}>
+        <button type="button" onClick={() => setFormLang('ar')} style={{
+          padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer',
+          fontSize: '14px', fontWeight: '600', fontFamily: 'Cairo, sans-serif',
+          color: formLang === 'ar' ? '#14b8a6' : '#9ca3af',
+          borderBottom: formLang === 'ar' ? '2px solid #14b8a6' : '2px solid transparent',
+          marginBottom: '-1px',
+        }}>🇸🇦 العربية</button>
+        <button type="button" onClick={() => setFormLang('en')} style={{
+          padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer',
+          fontSize: '14px', fontWeight: '600', fontFamily: 'Cairo, sans-serif',
+          color: formLang === 'en' ? '#14b8a6' : '#9ca3af',
+          borderBottom: formLang === 'en' ? '2px solid #14b8a6' : '2px solid transparent',
+          marginBottom: '-1px',
+        }}>🌐 English</button>
+      </div>
+
+      {formLang === 'en' && (
+        <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '16px' }}>
+          Optional — if left blank, the site falls back to the Arabic version when a visitor selects English.
+        </p>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div>
-          <label style={labelStyle}>العنوان</label>
-          <input dir="rtl" style={inputStyle} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+          <label style={labelStyle}>{formLang === 'ar' ? 'العنوان' : 'Title'}</label>
+          <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} value={form[`title${suf}`] || ''} onChange={e => setForm({ ...form, [`title${suf}`]: e.target.value })} />
         </div>
         <div>
-          <label style={labelStyle}>التصنيف</label>
-          <input dir="rtl" style={inputStyle} list="categories" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} />
-          <datalist id="categories">
-            {categories.map(c => <option key={c} value={c} />)}
-          </datalist>
+          <label style={labelStyle}>{formLang === 'ar' ? 'التصنيف' : 'Category'}</label>
+          <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} list={formLang === 'ar' ? 'categories' : undefined} value={form[`category${suf}`] || ''} onChange={e => setForm({ ...form, [`category${suf}`]: e.target.value })} />
+          {formLang === 'ar' && (
+            <datalist id="categories">
+              {categories.map(c => <option key={c} value={c} />)}
+            </datalist>
+          )}
         </div>
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={labelStyle}>الملخص (يظهر في بطاقة المقال)</label>
-        <textarea dir="rtl" rows={2} style={{ ...inputStyle, resize: 'vertical' }} value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} />
+        <label style={labelStyle}>{formLang === 'ar' ? 'الملخص (يظهر في بطاقة المقال)' : 'Excerpt (shown on the article card)'}</label>
+        <textarea dir={formLang === 'ar' ? 'rtl' : 'ltr'} rows={2} style={{ ...inputStyle, resize: 'vertical' }} value={form[`excerpt${suf}`] || ''} onChange={e => setForm({ ...form, [`excerpt${suf}`]: e.target.value })} />
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={labelStyle}>نص المقال الكامل (افصل بين الفقرات بسطر فارغ)</label>
-        <textarea dir="rtl" rows={8} style={{ ...inputStyle, resize: 'vertical' }} value={form.body} onChange={e => setForm({ ...form, body: e.target.value })} />
+        <label style={labelStyle}>{formLang === 'ar' ? 'نص المقال الكامل (افصل بين الفقرات بسطر فارغ)' : 'Full article body (blank line between paragraphs)'}</label>
+        <textarea dir={formLang === 'ar' ? 'rtl' : 'ltr'} rows={8} style={{ ...inputStyle, resize: 'vertical' }} value={form[`body${suf}`] || ''} onChange={e => setForm({ ...form, [`body${suf}`]: e.target.value })} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div>
-          <label style={labelStyle}>التاريخ (كما يظهر في الموقع)</label>
-          <input dir="rtl" style={inputStyle} value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} placeholder="١٠ أبريل ٢٠٢٦" />
+          <label style={labelStyle}>{formLang === 'ar' ? 'التاريخ (كما يظهر في الموقع)' : 'Date (as shown on the site)'}</label>
+          <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} value={form[`date${suf}`] || ''} onChange={e => setForm({ ...form, [`date${suf}`]: e.target.value })} placeholder={formLang === 'ar' ? '١٠ أبريل ٢٠٢٦' : 'April 10, 2026'} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '10px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
-            <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} />
-            مقال مميز
-          </label>
-        </div>
+        {formLang === 'ar' && (
+          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '10px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
+              <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} />
+              مقال مميز
+            </label>
+          </div>
+        )}
       </div>
 
       <div style={{ marginBottom: '16px' }}>
@@ -218,6 +248,9 @@ function Dashboard({ userEmail }) {
         title: form.title, category: form.category, excerpt: form.excerpt,
         body: form.body, date: form.date, featured: form.featured,
         bg: form.bg, img: imgPath,
+        title_en: form.title_en || null, category_en: form.category_en || null,
+        excerpt_en: form.excerpt_en || null, body_en: form.body_en || null,
+        date_en: form.date_en || null,
       }
 
       if (form.id) {

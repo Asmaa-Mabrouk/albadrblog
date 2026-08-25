@@ -6,7 +6,7 @@ import heroImg from './assets/hero_new.jpeg'
 import bookCoverImg from './assets/book_cover.png'
 import profileAvatarImg from './assets/badr_profile.png'
 import { supabase } from './supabaseClient'
-import { LanguageProvider } from './LanguageContext'
+import { LanguageProvider, useLanguage, localizeArticle } from './LanguageContext'
 import {
   Navbar, Footer, ScrollToTop,
   ArrowLeftIcon, CalendarIcon,
@@ -326,6 +326,7 @@ function ArticleCard({ article }) {
 
 function ArticlesGrid() {
   const { t } = useTheme()
+  const { lang } = useLanguage()
   const [articles, setArticles] = useState(null)
 
   useEffect(() => {
@@ -333,6 +334,8 @@ function ArticlesGrid() {
       setArticles(data || [])
     })
   }, [])
+
+  const localized = (articles || []).map(a => localizeArticle(a, lang))
 
   return (
     <section style={{ backgroundColor: t.bg, padding: '80px 0', transition: 'background-color 0.3s' }}>
@@ -343,7 +346,7 @@ function ArticlesGrid() {
           <div style={{ width: '40px', height: '3px', background: 'linear-gradient(to left, #c8a96e, #e8c98e)', borderRadius: '999px', margin: '0 auto' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-          {(articles || []).map((article) => <ArticleCard key={article.id} article={article} />)}
+          {localized.map((article) => <ArticleCard key={article.id} article={article} />)}
         </div>
       </div>
     </section>
@@ -371,11 +374,13 @@ function ArticlePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t } = useTheme()
-  const [article, setArticle] = useState(undefined) // undefined = loading, null = not found
+  const { lang } = useLanguage()
+  const [rawArticle, setRawArticle] = useState(undefined) // undefined = loading, null = not found
+  const article = localizeArticle(rawArticle, lang)
 
   useEffect(() => {
     supabase.from('articles').select('*').eq('id', id).maybeSingle().then(({ data }) => {
-      setArticle(data || null)
+      setRawArticle(data || null)
     })
   }, [id])
 

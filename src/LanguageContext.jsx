@@ -20,6 +20,7 @@ export const translations = {
   buy_book: { ar: 'اشتر الكتاب', en: 'Buy the Book' },
   view_all_articles: { ar: 'عرض جميع المقالات', en: 'View All Articles' },
   loading: { ar: 'جارٍ التحميل...', en: 'Loading...' },
+  all_category: { ar: 'الكل', en: 'All' },
 }
 
 const LanguageContext = createContext(null)
@@ -52,4 +53,20 @@ export function LanguageProvider({ children }) {
 
 export function useLanguage() {
   return useContext(LanguageContext)
+}
+
+// ─── Article localization helper ────────────────────────────────────────────
+// Falls back to the Arabic field whenever the English version is empty,
+// so partially-translated articles still display sensibly.
+export function localizeArticle(article, lang) {
+  if (!article) return article
+  if (lang !== 'en') return article
+  return {
+    ...article,
+    title: article.title_en || article.title,
+    category: article.category_en || article.category,
+    excerpt: article.excerpt_en || article.excerpt,
+    body: article.body_en || article.body,
+    date: article.date_en || article.date,
+  }
 }

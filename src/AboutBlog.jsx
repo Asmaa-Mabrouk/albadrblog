@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Navbar, Footer, ArrowLeftIcon, CalendarIcon, useTheme } from './shared'
 import { supabase } from './supabaseClient'
+import { useLanguage, localizeArticle } from './LanguageContext'
 
 // ─── Topic icons ──────────────────────────────────────────────────────────────
 const LeadershipIcon = () => (
@@ -379,6 +380,7 @@ function TopicCard({ topic }) {
 function PopularArticles() {
   const navigate = useNavigate()
   const { t } = useTheme()
+  const { lang } = useLanguage()
   const [popularArticles, setPopularArticles] = useState([])
 
   useEffect(() => {
@@ -386,6 +388,8 @@ function PopularArticles() {
       setPopularArticles(data || [])
     })
   }, [])
+
+  const localized = popularArticles.map(a => localizeArticle(a, lang))
 
   return (
     <section style={{ backgroundColor: t.bgSoft, padding: '80px 0' }}>
@@ -416,7 +420,7 @@ function PopularArticles() {
           maxWidth: '840px',
           margin: '0 auto',
         }}>
-          {popularArticles.map((article) => (
+          {localized.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </div>

@@ -67,3 +67,10 @@ create policy "Authenticated update article images" on storage.objects
   for update to authenticated using (bucket_id = 'article-images');
 create policy "Authenticated delete article images" on storage.objects
   for delete to authenticated using (bucket_id = 'article-images');
+
+-- ── Bilingual support for articles (run once) ───────────────────────────
+alter table public.articles add column if not exists title_en text;
+alter table public.articles add column if not exists category_en text;
+alter table public.articles add column if not exists excerpt_en text;
+alter table public.articles add column if not exists body_en text;
+alter table public.articles add column if not exists date_en text;
