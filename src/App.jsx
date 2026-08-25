@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HashRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, useTheme, ArticleCard as SharedArticleCard, Newsletter } from './shared'
 import './index.css'
 import heroImg from './assets/hero_new.jpeg'
 import bookCoverImg from './assets/book_cover.png'
 import profileAvatarImg from './assets/badr_profile.png'
-import ARTICLES from './data/articles.json'
+import { supabase } from './supabaseClient'
 import {
   Navbar, Footer, ScrollToTop,
   ArrowLeftIcon, CalendarIcon,
@@ -277,9 +277,7 @@ function Profile() {
 }
 
 // ─── Articles Grid ────────────────────────────────────────────────────────────
-// Homepage shows the first 6 articles from the shared data source.
-const articles = ARTICLES.slice(0, 6)
-
+// Homepage shows the 6 most recent articles, fetched live from Supabase.
 function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
@@ -327,6 +325,14 @@ function ArticleCard({ article }) {
 
 function ArticlesGrid() {
   const { t } = useTheme()
+  const [articles, setArticles] = useState(null)
+
+  useEffect(() => {
+    supabase.from('articles').select('*').order('id', { ascending: false }).limit(6).then(({ data }) => {
+      setArticles(data || [])
+    })
+  }, [])
+
   return (
     <section style={{ backgroundColor: t.bg, padding: '80px 0', transition: 'background-color 0.3s' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
@@ -336,7 +342,7 @@ function ArticlesGrid() {
           <div style={{ width: '40px', height: '3px', background: 'linear-gradient(to left, #c8a96e, #e8c98e)', borderRadius: '999px', margin: '0 auto' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-          {articles.map((article) => <ArticleCard key={article.id} article={article} />)}
+          {(articles || []).map((article) => <ArticleCard key={article.id} article={article} />)}
         </div>
       </div>
     </section>
@@ -364,7 +370,25 @@ function ArticlePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t } = useTheme()
-  const article = ARTICLES.find(a => String(a.id) === String(id))
+  const [article, setArticle] = useState(undefined) // undefined = loading, null = not found
+
+  useEffect(() => {
+    supabase.from('articles').select('*').eq('id', id).maybeSingle().then(({ data }) => {
+      setArticle(data || null)
+    })
+  }, [id])
+
+  if (article === undefined) {
+    return (
+      <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+        <Navbar />
+        <main style={{ paddingTop: '140px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#9ca3af' }}>جارٍ التحميل...</p>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   if (!article) {
     return (

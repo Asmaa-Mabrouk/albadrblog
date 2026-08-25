@@ -1,12 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.png'
-import ARTICLES from './data/articles.json'
+import { supabase } from './supabaseClient'
 
-// ─── All articles data ─────────────────────────────────────────────────────────
-const ALL_ARTICLES = ARTICLES
-
-const CATEGORIES = ['الكل', 'القيادة', 'التحول', 'الشباب', 'ريادة', 'المهنة', 'الإدارة']
+const ALL_CATEGORY = 'الكل'
 
 // ─── Welcome section ──────────────────────────────────────────────────────────
 function WelcomeSection() {
@@ -134,7 +131,7 @@ function WelcomeSection() {
 }
 
 // ─── Filter bar ───────────────────────────────────────────────────────────────
-function FilterBar({ active, onSelect }) {
+function FilterBar({ active, onSelect, categories }) {
   const { t } = useTheme()
   return (
     <div style={{
@@ -149,7 +146,7 @@ function FilterBar({ active, onSelect }) {
         overflowX: 'auto', justifyContent: 'center',
         scrollbarWidth: 'none',
       }}>
-        {CATEGORIES.map(cat => (
+        {categories.map(cat => (
           <button key={cat} onClick={() => onSelect(cat)} style={{
             backgroundColor: active === cat ? '#14b8a6' : t.bgSoft,
             color: active === cat ? '#ffffff' : '#0d7377',
@@ -230,12 +227,20 @@ function Pagination() {
 
 // ─── Page root ────────────────────────────────────────────────────────────────
 export default function Articles() {
-  const [activeCategory, setActiveCategory] = useState('الكل')
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY)
+  const [articles, setArticles] = useState(null)
   const { t } = useTheme()
 
-  const filtered = activeCategory === 'الكل'
-    ? ALL_ARTICLES
-    : ALL_ARTICLES.filter(a => a.category === activeCategory)
+  useEffect(() => {
+    supabase.from('articles').select('*').order('id', { ascending: false }).then(({ data }) => {
+      setArticles(data || [])
+    })
+  }, [])
+
+  const categories = [ALL_CATEGORY, ...new Set((articles || []).map(a => a.category))]
+  const filtered = !articles ? [] : activeCategory === ALL_CATEGORY
+    ? articles
+    : articles.filter(a => a.category === activeCategory)
 
   return (
     <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
@@ -243,12 +248,16 @@ export default function Articles() {
       <main style={{ paddingTop: '64px' }}>
         <PageHero pill="المقالات" heading="مقالاتي" subtitle="أفكار وتجارب في القيادة والنجاح" />
         <WelcomeSection />
-        <FilterBar active={activeCategory} onSelect={setActiveCategory} />
+        <FilterBar active={activeCategory} onSelect={setActiveCategory} categories={categories} />
 
         {/* Articles grid */}
         <section style={{ backgroundColor: t.bg, padding: '60px 0 80px' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-            {filtered.length > 0 ? (
+            {articles === null ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#9ca3af' }}>جارٍ التحميل...</p>
+              </div>
+            ) : filtered.length > 0 ? (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
                   {filtered.map(article => <ArticleCard key={article.id} article={article} />)}

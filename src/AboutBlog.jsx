@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Navbar, Footer, ArrowLeftIcon, CalendarIcon, useTheme } from './shared'
-import ARTICLES from './data/articles.json'
+import { supabase } from './supabaseClient'
 
 // ─── Topic icons ──────────────────────────────────────────────────────────────
 const LeadershipIcon = () => (
@@ -154,11 +154,7 @@ const topics = [
   },
 ]
 
-// Popular articles: featured ones first, then most recent, capped at 2 — kept in sync
-// with the shared article data source (src/data/articles.json), managed from /admin.
-const popularArticles = [...ARTICLES]
-  .sort((a, b) => (b.featured === a.featured ? b.id - a.id : b.featured ? 1 : -1))
-  .slice(0, 2)
+
 
 // ─── Section: Hero ────────────────────────────────────────────────────────────
 function BlogHero() {
@@ -383,6 +379,14 @@ function TopicCard({ topic }) {
 function PopularArticles() {
   const navigate = useNavigate()
   const { t } = useTheme()
+  const [popularArticles, setPopularArticles] = useState([])
+
+  useEffect(() => {
+    supabase.from('articles').select('*').order('featured', { ascending: false }).order('id', { ascending: false }).limit(2).then(({ data }) => {
+      setPopularArticles(data || [])
+    })
+  }, [])
+
   return (
     <section style={{ backgroundColor: t.bgSoft, padding: '80px 0' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>

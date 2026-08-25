@@ -1,94 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from './supabaseClient'
 
-// ─── Configuration ──────────────────────────────────────────────────────────
-// ⚠️ Change this password before you rely on this admin page.
-// This is a simple client-side check, not real authentication — anyone who
-// opens the page source can find it. It's meant to keep casual visitors out,
-// not to be a secure login system.
-const ADMIN_PASSWORD = 'badr-admin-2026'
-
-const OWNER = 'Asmaa-Mabrouk'
-const REPO = 'albadrblog'
-const BRANCH = 'main'
-const DATA_PATH = 'src/data/articles.json'
-const IMAGES_DIR = 'public/articles'
-
-const GITHUB_API = 'https://api.github.com'
-
-// ─── Base64 helpers (UTF-8 safe, for Arabic text) ───────────────────────────
-function utf8ToBase64(str) {
-  return btoa(unescape(encodeURIComponent(str)))
-}
-function base64ToUtf8(b64) {
-  return decodeURIComponent(escape(atob(b64.replace(/\n/g, ''))))
-}
-
-// ─── GitHub API helpers ──────────────────────────────────────────────────────
-async function ghRequest(pat, path, options = {}) {
-  const res = await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${pat}`,
-      Accept: 'application/vnd.github+json',
-      ...(options.headers || {}),
-    },
-  })
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error(body.message || `طلب GitHub فشل (${res.status})`)
-  }
-  return res.json()
-}
-
-async function getFile(pat, path) {
-  try {
-    return await ghRequest(pat, `contents/${path}?ref=${BRANCH}`)
-  } catch (e) {
-    if (e.message.includes('404')) return null
-    throw e
-  }
-}
-
-async function putFile(pat, path, contentBase64, sha, message) {
-  return ghRequest(pat, `contents/${path}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      message,
-      content: contentBase64,
-      branch: BRANCH,
-      ...(sha ? { sha } : {}),
-    }),
-  })
-}
-
-async function fetchArticles(pat) {
-  const file = await getFile(pat, DATA_PATH)
-  if (!file) return { articles: [], sha: null }
-  const text = base64ToUtf8(file.content)
-  return { articles: JSON.parse(text), sha: file.sha }
-}
-
-async function saveArticles(pat, articles, message) {
-  // Always re-fetch sha right before writing to avoid stale-sha conflicts.
-  const current = await getFile(pat, DATA_PATH)
-  const content = utf8ToBase64(JSON.stringify(articles, null, 2) + '\n')
-  return putFile(pat, DATA_PATH, content, current?.sha, message)
-}
+const IMAGES_BUCKET = 'article-images'
 
 function sanitizeFilename(name) {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9.-]/g, '-')
-    .replace(/-+/g, '-')
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result.split(',')[1])
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
+  return name.toLowerCase().replace(/[^a-z0-9.-]/g, '-').replace(/-+/g, '-')
 }
 
 // ─── Small UI atoms ──────────────────────────────────────────────────────────
@@ -122,67 +38,33 @@ const GRADIENT_PRESETS = [
 
 const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
 
-// ─── Login gate ──────────────────────────────────────────────────────────────
-function PasswordGate({ onSuccess }) {
-  const [value, setValue] = useState('')
+// ─── Login screen (real Supabase auth) ──────────────────────────────────────
+function LoginScreen() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>
-      <form
-        onSubmit={e => {
-          e.preventDefault()
-          if (value === ADMIN_PASSWORD) {
-            sessionStorage.setItem('admin_authed', '1')
-            onSuccess()
-          } else {
-            setError('كلمة المرور غير صحيحة.')
-          }
-        }}
-        style={{ backgroundColor: '#fff', padding: '36px', borderRadius: '14px', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', width: '320px' }}
-      >
-        <h1 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '18px', color: '#111827' }}>لوحة إدارة المدونة</h1>
-        <label style={labelStyle}>كلمة المرور</label>
-        <input type="password" autoFocus value={value} onChange={e => setValue(e.target.value)} style={inputStyle} />
-        {error && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{error}</p>}
-        <button type="submit" style={{ ...buttonPrimary, width: '100%', marginTop: '16px' }}>دخول</button>
-      </form>
-    </div>
-  )
-}
-
-// ─── GitHub token gate ───────────────────────────────────────────────────────
-function TokenGate({ onSuccess }) {
-  const [pat, setPat] = useState('')
-  const [checking, setChecking] = useState(false)
-  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setChecking(true)
+    setLoading(true)
     setError('')
-    try {
-      await ghRequest(pat, '')
-      localStorage.setItem('admin_gh_pat', pat)
-      onSuccess(pat)
-    } catch {
-      setError('تعذّر الاتصال بـ GitHub. تأكد من صحة الرمز (Token) والصلاحيات.')
-    } finally {
-      setChecking(false)
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.')
+    setLoading(false)
   }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#fff', padding: '36px', borderRadius: '14px', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', width: '420px' }}>
-        <h1 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px', color: '#111827' }}>ربط GitHub</h1>
-        <p style={{ fontSize: '13px', color: '#6b7280', lineHeight: 1.6, marginBottom: '16px' }}>
-          الصق هنا Personal Access Token (بصلاحية Contents: Read and write على مستودع {REPO}). يُحفظ فقط في متصفحك ولا يُرسل لأي جهة أخرى.
-        </p>
-        <label style={labelStyle}>GitHub Personal Access Token</label>
-        <input type="password" autoFocus value={pat} onChange={e => setPat(e.target.value)} style={inputStyle} placeholder="ghp_xxxxxxxxxxxx" />
+      <form onSubmit={handleSubmit} style={{ backgroundColor: '#fff', padding: '36px', borderRadius: '14px', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', width: '340px' }}>
+        <h1 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '18px', color: '#111827' }}>لوحة إدارة المدونة</h1>
+        <label style={labelStyle}>البريد الإلكتروني</label>
+        <input type="email" autoFocus value={email} onChange={e => setEmail(e.target.value)} style={{ ...inputStyle, marginBottom: '14px' }} />
+        <label style={labelStyle}>كلمة المرور</label>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
         {error && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{error}</p>}
-        <button type="submit" disabled={checking || !pat} style={{ ...buttonPrimary, width: '100%', marginTop: '16px', opacity: checking || !pat ? 0.6 : 1 }}>
-          {checking ? 'جارٍ التحقق...' : 'حفظ ومتابعة'}
+        <button type="submit" disabled={loading} style={{ ...buttonPrimary, width: '100%', marginTop: '18px', opacity: loading ? 0.6 : 1 }}>
+          {loading ? 'جارٍ الدخول...' : 'دخول'}
         </button>
       </form>
     </div>
@@ -301,7 +183,7 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
 }
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────
-function Dashboard({ pat }) {
+function Dashboard({ userEmail }) {
   const [articles, setArticles] = useState(null)
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // null | 'new' | article
@@ -310,15 +192,11 @@ function Dashboard({ pat }) {
 
   async function load() {
     setError('')
-    try {
-      const { articles } = await fetchArticles(pat)
-      setArticles(articles)
-    } catch (e) {
-      setError(e.message)
-    }
+    const { data, error } = await supabase.from('articles').select('*').order('id', { ascending: false })
+    if (error) setError(error.message)
+    else setArticles(data)
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load() }, [])
 
   const categories = [...new Set((articles || []).map(a => a.category).filter(Boolean))]
@@ -329,25 +207,30 @@ function Dashboard({ pat }) {
     try {
       let imgPath = form.img || ''
       if (imageFile) {
-        const base64 = await fileToBase64(imageFile)
         const filename = `${Date.now()}-${sanitizeFilename(imageFile.name)}`
-        const path = `${IMAGES_DIR}/${filename}`
-        await putFile(pat, path, base64, null, `رفع صورة مقال: ${filename}`)
-        imgPath = `/articles/${filename}`
+        const { error: uploadError } = await supabase.storage.from(IMAGES_BUCKET).upload(filename, imageFile)
+        if (uploadError) throw uploadError
+        const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(filename)
+        imgPath = urlData.publicUrl
       }
 
-      let updated
+      const record = {
+        title: form.title, category: form.category, excerpt: form.excerpt,
+        body: form.body, date: form.date, featured: form.featured,
+        bg: form.bg, img: imgPath,
+      }
+
       if (form.id) {
-        updated = articles.map(a => a.id === form.id ? { ...form, img: imgPath } : a)
+        const { error } = await supabase.from('articles').update(record).eq('id', form.id)
+        if (error) throw error
       } else {
-        const nextId = articles.length ? Math.max(...articles.map(a => a.id)) + 1 : 1
-        updated = [...articles, { ...form, id: nextId, img: imgPath }]
+        const { error } = await supabase.from('articles').insert(record)
+        if (error) throw error
       }
 
-      await saveArticles(pat, updated, form.id ? `تحديث مقال: ${form.title}` : `إضافة مقال جديد: ${form.title}`)
-      setArticles(updated)
+      await load()
       setEditing(null)
-      setNotice('تم الحفظ! سيقوم Netlify بإعادة نشر الموقع خلال دقيقة أو دقيقتين.')
+      setNotice('تم الحفظ! التغييرات ظاهرة على الموقع الآن مباشرة.')
       setTimeout(() => setNotice(''), 6000)
     } catch (e) {
       setError(e.message)
@@ -361,10 +244,10 @@ function Dashboard({ pat }) {
     setSaving(true)
     setError('')
     try {
-      const updated = articles.filter(a => a.id !== article.id)
-      await saveArticles(pat, updated, `حذف مقال: ${article.title}`)
-      setArticles(updated)
-      setNotice('تم الحذف! سيقوم Netlify بإعادة نشر الموقع خلال دقيقة أو دقيقتين.')
+      const { error } = await supabase.from('articles').delete().eq('id', article.id)
+      if (error) throw error
+      await load()
+      setNotice('تم الحذف!')
       setTimeout(() => setNotice(''), 6000)
     } catch (e) {
       setError(e.message)
@@ -376,19 +259,16 @@ function Dashboard({ pat }) {
   return (
     <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: '#f8fafc', padding: '32px 24px' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#111827' }}>إدارة المقالات</h1>
           <div style={{ display: 'flex', gap: '10px' }}>
             {!editing && (
               <button style={buttonPrimary} onClick={() => setEditing('new')}>+ مقال جديد</button>
             )}
-            <button style={buttonSecondary} onClick={() => {
-              sessionStorage.removeItem('admin_authed')
-              localStorage.removeItem('admin_gh_pat')
-              window.location.reload()
-            }}>تسجيل الخروج</button>
+            <button style={buttonSecondary} onClick={() => supabase.auth.signOut()}>تسجيل الخروج</button>
           </div>
         </div>
+        <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '20px' }}>مسجّل الدخول باسم: {userEmail}</p>
 
         {notice && (
           <div style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>
@@ -444,10 +324,15 @@ function Dashboard({ pat }) {
 
 // ─── Root ────────────────────────────────────────────────────────────────────
 export default function Admin() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem('admin_authed') === '1')
-  const [pat, setPat] = useState(() => localStorage.getItem('admin_gh_pat') || '')
+  const [session, setSession] = useState(undefined) // undefined = loading, null = logged out
 
-  if (!authed) return <PasswordGate onSuccess={() => setAuthed(true)} />
-  if (!pat) return <TokenGate onSuccess={setPat} />
-  return <Dashboard pat={pat} />
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    return () => listener.subscription.unsubscribe()
+  }, [])
+
+  if (session === undefined) return null
+  if (!session) return <LoginScreen />
+  return <Dashboard userEmail={session.user.email} />
 }
