@@ -164,7 +164,7 @@ export function Navbar() {
     { label: 'عن المدونة', to: '/blog' },
     { label: 'كتبي', to: '/books' },
     { label: 'اقرأ مقالاتي', to: '/articles' },
-    { label: 'مؤتمرات وفاعليات', to: '/events' },
+    { label: 'مؤتمرات وفعاليات', to: '/events' },
   ]
 
   const linkStyle = (active) => ({
@@ -324,7 +324,7 @@ export function Footer() {
     { label: 'المدونة', to: '/blog' },
     { label: 'كتبي', to: '/books' },
     { label: 'المقالات', to: '/articles' },
-    { label: 'مؤتمرات وفاعليات', to: '/events' },
+    { label: 'مؤتمرات وفعاليات', to: '/events' },
   ]
   const socials = [
     { icon: <EmailIcon />, label: 'البريد' },

@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Navbar, Footer, PageHero, SectionHeader, Newsletter, ArrowLeftIcon, useTheme } from './shared'
+import { Navbar, Footer, PageHero, SectionHeader, ArrowLeftIcon, useTheme } from './shared'
 import bookCoverImg from './assets/book_cover.png'
 import padWithHandImg from './assets/pad_with_hand.png'
+import profileAvatarImg from './assets/badr_profile.png'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const ExternalLinkIcon = ({ size = 16 }) => (
@@ -58,6 +59,131 @@ function BookCover({ tilt = true }) {
         style={{ width: '280px', height: 'auto', borderRadius: '8px', display: 'block' }}
       />
     </div>
+  )
+}
+
+// ─── Author intro ─────────────────────────────────────────────────────────────
+function AuthorIntro() {
+  const { t } = useTheme()
+  return (
+    <section style={{
+      backgroundColor: t.bg,
+      padding: '72px 0 64px',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Soft background wash */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse at 30% 50%, rgba(20,184,166,0.05) 0%, transparent 60%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div style={{ maxWidth: '1060px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          display: 'flex', flexWrap: 'wrap',
+          alignItems: 'center', gap: '56px',
+        }}>
+
+          {/* ── Left: Avatar column ── */}
+          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+            <div style={{
+              width: '196px', height: '196px', borderRadius: '50%',
+              outline: '4px solid #14b8a6',
+              outlineOffset: '4px',
+              overflow: 'hidden',
+              boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
+            }}>
+              <img
+                src={profileAvatarImg}
+                alt="بدر بن حمود البدر"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+
+            {/* Name tag below photo */}
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <p style={{
+                fontFamily: 'Playfair Display, Cairo, sans-serif',
+                fontSize: '16px', fontWeight: '700',
+                color: t.text, marginBottom: '4px',
+              }}>
+                بدر بن حمود البدر
+              </p>
+              <p style={{
+                fontFamily: 'Cairo, sans-serif', fontSize: '13px',
+                color: '#14b8a6', fontWeight: '600',
+              }}>
+                قائد · مؤلف · متحدث
+              </p>
+            </div>
+          </div>
+
+          {/* ── Right: Text column ── */}
+          <div style={{ flex: '1 1 340px', textAlign: 'right', position: 'relative' }}>
+
+            {/* Giant decorative quote mark */}
+            <div style={{
+              position: 'absolute', top: '-32px', right: '-16px',
+              fontFamily: 'Georgia, serif', fontSize: '160px',
+              color: 'rgba(20,184,166,0.08)', lineHeight: 1,
+              userSelect: 'none', pointerEvents: 'none',
+            }}>«</div>
+
+            {/* Welcome heading */}
+            <h2 style={{
+              fontFamily: 'Playfair Display, Cairo, sans-serif',
+              fontSize: 'clamp(22px, 2.8vw, 30px)',
+              fontWeight: '700', color: t.text,
+              lineHeight: 1.6, marginBottom: '28px',
+              position: 'relative', zIndex: 1,
+            }}>
+              أرحب بكم هنا في{' '}
+              <span style={{ color: '#14b8a6' }}>مدونتي</span>
+              {' '}والتي أدوّن بها بعضًا من{' '}
+              <span style={{ color: '#14b8a6' }}>تجاربي ومحطاتي</span>
+              {' '}في رحلة{' '}
+              <span style={{ color: '#c8a96e' }}>آمل أن تتكلل بالنجاح.</span>
+            </h2>
+
+            {/* Gold thin divider */}
+            <div style={{
+              width: '48px', height: '2px',
+              background: 'linear-gradient(to left, #c8a96e, #e8c98e)',
+              borderRadius: '999px', marginBottom: '24px', marginRight: 0,
+            }} />
+
+            {/* Para 1 */}
+            <p style={{
+              fontFamily: 'Cairo, sans-serif',
+              fontSize: '15px', color: t.textBody,
+              lineHeight: 1.95, marginBottom: '18px', textAlign: 'right',
+            }}>
+              اسمي <span style={{ fontWeight: '700', color: t.text }}>بدر بن حمود البدر</span>، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال، بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.
+            </p>
+
+            {/* Para 2 */}
+            <p style={{
+              fontFamily: 'Cairo, sans-serif',
+              fontSize: '15px', color: t.textBody,
+              lineHeight: 1.95, marginBottom: '32px', textAlign: 'right',
+            }}>
+              بالنسبة لي، المواقف الصعبة هي{' '}
+              <span style={{ color: '#14b8a6', fontWeight: '600' }}>مصدر تحفيز</span>
+              ؛ فأنا أستمتع بالعمل في فترات عدم اليقين وفي أوقات التغيير السريع، وأجدها فرصة لتحليل الواقع وتصوّر المستقبل وحل المشكلات.
+            </p>
+
+            {/* Bottom accent line */}
+            <div style={{
+              height: '1px',
+              background: 'linear-gradient(to left, rgba(20,184,166,0.4), transparent)',
+            }} />
+          </div>
+
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -501,6 +627,109 @@ function CtaStrip() {
   )
 }
 
+// ─── Newsletter — identical to the "عن المدونة" page ──────────────────────────
+function Newsletter() {
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const { t } = useTheme()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (email && name) setSubmitted(true)
+  }
+
+  const inputStyle = {
+    fontFamily: 'Cairo, sans-serif', fontSize: '15px',
+    color: t.text, backgroundColor: t.inputBg,
+    border: `1px solid ${t.border}`,
+    borderRadius: '6px', padding: '10px 14px',
+    outline: 'none', width: '100%',
+    transition: 'border-color 0.2s',
+    textAlign: 'right', direction: 'rtl',
+    boxSizing: 'border-box',
+  }
+
+  return (
+    <section style={{ backgroundColor: t.bg, padding: '0 0 80px' }}>
+      <div style={{ maxWidth: '780px', margin: '0 auto', padding: '0 24px', textAlign: 'right' }}>
+        <p style={{
+          fontFamily: 'Cairo, sans-serif',
+          fontSize: '18px', fontWeight: '700', color: t.text,
+          marginBottom: '24px',
+        }}>
+          اشترك في النشرة البريدية للمدونة
+        </p>
+
+        {submitted ? (
+          <div style={{
+            backgroundColor: t.bgSoft, borderRadius: '16px', padding: '32px 24px',
+            boxShadow: t.shadow,
+            border: `1.5px solid ${t.borderSoft}`,
+          }}>
+            <div style={{
+              width: '52px', height: '52px', borderRadius: '50%',
+              backgroundColor: 'rgba(20,184,166,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 16px',
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="#14b8a6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <p style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '20px', fontWeight: '700', color: t.text, marginBottom: '8px' }}>
+              شكرًا على اشتراكك!
+            </p>
+            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted }}>
+              سيصلك أول محتوى جديد قريبًا بإذن الله.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '400px' }}>
+            <div>
+              <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
+                البريد الإلكتروني
+              </label>
+              <input type="email" placeholder="البريد الإلكتروني" value={email}
+                onChange={e => setEmail(e.target.value)} required
+                dir="ltr" style={{ ...inputStyle, textAlign: 'left' }}
+                onFocus={e => e.target.style.borderColor = '#14b8a6'}
+                onBlur={e => e.target.style.borderColor = t.border}
+              />
+            </div>
+            <div>
+              <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
+                الاسم
+              </label>
+              <input type="text" placeholder="اسمك" value={name}
+                onChange={e => setName(e.target.value)} required style={inputStyle}
+                onFocus={e => e.target.style.borderColor = '#14b8a6'}
+                onBlur={e => e.target.style.borderColor = t.border}
+              />
+            </div>
+            <div>
+              <button type="submit" style={{
+                backgroundColor: '#14b8a6', color: '#ffffff',
+                padding: '10px 28px', fontSize: '15px',
+                fontFamily: 'Cairo, sans-serif', fontWeight: '600',
+                border: 'none', borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#0d9488'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#14b8a6'}
+              >
+                انضم الآن
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </section>
+  )
+}
+
 // ─── Page root ────────────────────────────────────────────────────────────────
 export default function Books() {
   const { t } = useTheme()
@@ -509,13 +738,14 @@ export default function Books() {
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <PageHero pill="الكتب" heading="كتبي" subtitle="إصدارات في القيادة والنجاح المهني" />
+        <AuthorIntro />
         <MainBookFeature />
         <WhyRead />
         <ReviewsSection />
         <DigitalEdition />
         <ChaptersGrid />
         <CtaStrip />
-        <Newsletter bgColor="#f0faf9" />
+        <Newsletter />
       </main>
       <Footer />
     </div>
