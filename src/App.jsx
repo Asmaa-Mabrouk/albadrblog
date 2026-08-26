@@ -24,6 +24,7 @@ function Hero() {
   const navigate = useNavigate()
   const { lang, t: tr } = useLanguage()
   const [rawFeatured, setRawFeatured] = useState(null)
+  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     supabase.from('articles').select('*').order('featured', { ascending: false }).order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
@@ -37,86 +38,113 @@ function Hero() {
   return (
     <section style={{
       position: 'relative', width: '100%', minHeight: '100vh',
-      display: 'flex', alignItems: 'flex-end',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backgroundColor: '#04141c',
       overflow: 'hidden',
     }}>
-      {/* Full-bleed article photo, subtly zoomed for depth */}
+      {/* Subtle static texture behind the card so the page never looks bare */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 30%',
-        backgroundRepeat: 'no-repeat',
-        transform: 'scale(1.05)',
-      }} />
-      {/* Editorial gradient — dark from the bottom for legible text, subtle vignette from the sides */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(4,20,28,0.96) 0%, rgba(4,20,28,0.75) 30%, rgba(4,20,28,0.25) 60%, rgba(4,20,28,0.05) 100%)',
-      }} />
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(to right, rgba(4,20,28,0.5) 0%, transparent 30%, transparent 70%, rgba(4,20,28,0.5) 100%)',
-      }} />
-      {/* Thin gold accent line, top */}
-      <div style={{
-        position: 'absolute', top: 0, insetInline: 0, height: '4px',
-        background: 'linear-gradient(to left, #c8a96e, #e8c98e, #14b8a6)',
+        backgroundImage: 'radial-gradient(circle at 25% 30%, rgba(20,184,166,0.10) 0%, transparent 45%), radial-gradient(circle at 75% 70%, rgba(200,169,110,0.08) 0%, transparent 45%)',
       }} />
 
-      {/* Content — bottom-anchored, editorial-style */}
-      <div style={{
-        position: 'relative', zIndex: 10,
-        width: '100%', maxWidth: '900px', margin: '0 auto',
-        padding: '0 24px 100px', textAlign: 'center',
-      }}>
-        <div style={{ marginBottom: '22px' }}>
-          <span style={{
-            backgroundColor: 'rgba(20,184,166,0.16)', color: '#5eead4',
-            border: '1px solid rgba(94,234,212,0.4)',
-            fontSize: '13px', fontWeight: '600',
-            padding: '6px 20px', borderRadius: '999px',
-            fontFamily: 'Cairo, sans-serif', letterSpacing: '0.02em',
-          }}>
-            {featured?.category ? `${tr('latest_article_pill')} · ${featured.category}` : tr('latest_article_pill')}
-          </span>
+      {/* Card: shows article info by default, reveals the photo on hover */}
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => navigate(rawFeatured ? `/article/${rawFeatured.id}` : '/articles')}
+        style={{
+          position: 'relative', zIndex: 10, cursor: 'pointer',
+          width: 'min(92%, 780px)', minHeight: '420px',
+          borderRadius: '20px', overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.12)',
+          boxShadow: hovered ? '0 30px 70px rgba(0,0,0,0.55)' : '0 20px 50px rgba(0,0,0,0.4)',
+          transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+          transition: 'transform 0.4s ease, box-shadow 0.4s ease',
+          display: 'flex', alignItems: 'flex-end',
+        }}
+      >
+        {/* Base panel color (visible before/without hover) */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(135deg, #0a3d52 0%, #04334c 60%, #072a3d 100%)',
+        }} />
+        {/* Article photo — fades in on hover */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: `url(${bgImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 35%',
+          opacity: hovered ? 1 : 0,
+          transform: hovered ? 'scale(1.06)' : 'scale(1)',
+          transition: 'opacity 0.6s ease, transform 3s ease',
+        }} />
+        {/* Overlay that keeps text legible whether or not the photo is showing */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: hovered
+            ? 'linear-gradient(to top, rgba(4,20,28,0.92) 0%, rgba(4,20,28,0.55) 45%, rgba(4,20,28,0.25) 100%)'
+            : 'linear-gradient(to top, rgba(4,20,28,0.35) 0%, rgba(4,20,28,0.15) 100%)',
+          transition: 'background 0.5s ease',
+        }} />
+        {/* Thin gold/teal accent line, top */}
+        <div style={{
+          position: 'absolute', top: 0, insetInline: 0, height: '4px',
+          background: 'linear-gradient(to left, #c8a96e, #e8c98e, #14b8a6)',
+        }} />
+
+        {/* Text content */}
+        <div style={{
+          position: 'relative', zIndex: 1,
+          width: '100%', padding: '48px 40px', textAlign: 'center',
+        }}>
+          <div style={{ marginBottom: '20px' }}>
+            <span style={{
+              backgroundColor: 'rgba(20,184,166,0.16)', color: '#5eead4',
+              border: '1px solid rgba(94,234,212,0.4)',
+              fontSize: '13px', fontWeight: '600',
+              padding: '6px 20px', borderRadius: '999px',
+              fontFamily: 'Cairo, sans-serif', letterSpacing: '0.02em',
+            }}>
+              {featured?.category ? `${tr('latest_article_pill')} · ${featured.category}` : tr('latest_article_pill')}
+            </span>
+          </div>
+          {featured && (
+            <>
+              <h1 style={{
+                fontFamily: 'Playfair Display, Cairo, sans-serif',
+                fontSize: 'clamp(26px, 4.5vw, 42px)', fontWeight: '700', color: '#ffffff',
+                marginBottom: '16px', lineHeight: 1.3,
+              }}>
+                {featured.title}
+              </h1>
+              <p style={{
+                fontFamily: 'Cairo, sans-serif', fontSize: '16px',
+                color: 'rgba(255,255,255,0.82)', maxWidth: '560px',
+                margin: '0 auto 30px', lineHeight: 1.85,
+              }}>
+                {featured.excerpt}
+              </p>
+            </>
+          )}
+          <button
+            style={{
+              backgroundColor: '#14b8a6', color: '#ffffff',
+              padding: '13px 30px', fontSize: '15px',
+              fontFamily: 'Cairo, sans-serif', fontWeight: '600',
+              border: 'none', borderRadius: '999px', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: '10px',
+              boxShadow: '0 4px 24px rgba(20,184,166,0.5)',
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#0d9488'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#14b8a6'}
+            onClick={e => { e.stopPropagation(); navigate(rawFeatured ? `/article/${rawFeatured.id}` : '/articles') }}
+          >
+            {lang === 'en' ? 'Continue Reading' : 'أكمل القراءة'}
+            <ArrowLeftIcon size={16} />
+          </button>
         </div>
-        {featured && (
-          <>
-            <h1 style={{
-              fontFamily: 'Playfair Display, Cairo, sans-serif',
-              fontSize: 'clamp(30px, 5.5vw, 56px)', fontWeight: '700', color: '#ffffff',
-              marginBottom: '18px', lineHeight: 1.3,
-              textShadow: '0 2px 24px rgba(0,0,0,0.5)',
-            }}>
-              {featured.title}
-            </h1>
-            <p style={{
-              fontFamily: 'Cairo, sans-serif', fontSize: '17px',
-              color: 'rgba(255,255,255,0.82)', maxWidth: '620px',
-              margin: '0 auto 36px', lineHeight: 1.85,
-            }}>
-              {featured.excerpt}
-            </p>
-          </>
-        )}
-        <button
-          style={{
-            backgroundColor: '#14b8a6', color: '#ffffff',
-            padding: '14px 32px', fontSize: '16px',
-            fontFamily: 'Cairo, sans-serif', fontWeight: '600',
-            border: 'none', borderRadius: '999px', cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: '10px',
-            boxShadow: '0 4px 24px rgba(20,184,166,0.5)',
-            transition: 'background-color 0.2s, transform 0.2s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#0d9488'; e.currentTarget.style.transform = 'scale(1.04)' }}
-          onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#14b8a6'; e.currentTarget.style.transform = 'scale(1)' }}
-          onClick={() => navigate(rawFeatured ? `/article/${rawFeatured.id}` : '/articles')}
-        >
-          {lang === 'en' ? 'Continue Reading' : 'أكمل القراءة'}
-          <ArrowLeftIcon size={16} />
-        </button>
       </div>
     </section>
   )
