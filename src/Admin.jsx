@@ -244,6 +244,7 @@ const PAGES_CONFIG = {
         key: 'qualifications', label: 'مؤهلاتي', type: 'list',
         itemFields: [{ key: 'text', label: 'المؤهل' }],
       },
+      { key: 'awards_text', label: 'فقرة الجوائز' },
       { key: 'hobbies_text', label: 'هواياتي (النص)' },
     ],
   },

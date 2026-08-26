@@ -22,6 +22,10 @@ export const translations = {
   view_all_articles: { ar: 'عرض جميع المقالات', en: 'View All Articles' },
   loading: { ar: 'جارٍ التحميل...', en: 'Loading...' },
   all_category: { ar: 'الكل', en: 'All' },
+  welcome_prefix: { ar: 'أرحب بكم هنا في', en: 'Welcome to' },
+  about_career_heading: { ar: 'مجالاتي المهنية', en: 'My Professional Fields' },
+  about_qualifications_heading: { ar: 'مؤهلاتي', en: 'My Qualifications' },
+  about_hobbies_heading: { ar: 'هواياتي', en: 'My Hobbies' },
 }
 
 const LanguageContext = createContext(null)

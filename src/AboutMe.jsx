@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Navbar, Footer, EmailIcon, LinkedInIcon, YouTubeIcon, TwitterIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.png'
-import { usePageContent } from './LanguageContext'
+import { usePageContent, useLanguage } from './LanguageContext'
 
 const socials = [
   { icon: <TwitterIcon />, label: 'تويتر', href: '#' },
@@ -168,12 +168,14 @@ function Newsletter() {
 export default function AboutMe() {
   const { t } = useTheme()
   const { get, getList } = usePageContent('about')
+  const { t: tr } = useLanguage()
   const introPara1 = get('about_intro_1', 'مدونتي والتي أدون بها بعض من تجاربي ومحطاتي في رحلة آمل أن تلهمك.')
   const introPara2 = get('about_intro_2', 'اسمي بدر بن حمود البدر، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.')
   const introPara3 = get('about_intro_3', 'بالنسبة لي، المواقف الصعبة هي مصدر تحفيز فأنا أجد متعتي بالعمل في فترات عدم اليقين، وأوقات التغيير السريع وأجدها فرصة لتحليل الواقع وتصور المستقبل وحل المشكلات.')
   const displayedCareerItems = getList('career_items', careerItems)
   const displayedQualifications = getList('qualifications', qualifications.map(text => ({ text })))
   const hobbiesText = get('hobbies_text', 'خارج مكتبي، أمارس هوايتي بنفس الشغف الذي أمارس به عملي فالرياضة والاستكشاف جزء مهم من حياتي واعتبرها من أهم مكونات شخصيتي القيادية. أحب التمرين والسفر بالدراجة الهوائية، وأشارككم تفاصيل من بعض رحلاتي في المدونة. وعدت مؤخرًا لهواية قديمة وهي التصوير وأشارككم هنا بعض من لقطاتي (غالب صور الموقع من تصويري). كما أنني شغوف بنشر المعرفة عبر شبكات التواصل الاجتماعي وأحاضر في الفعاليات المتعلقة بتخصصي وخبراتي.')
+  const awardsText = get('awards_text', 'نلت جوائزًا عديدة خلال مسيرتي القيادية، إذ صنفت ضمن: أفضل 100 رئيس تنفيذي في المنطقة، وضمن أقوى 20 مديرًا تنفيذيًا في مجال الضيافة بالمنطقة، ولثلاث مرات نالت شركات قدتها جائزة أفضل بيئة عمل في المملكة.')
   return (
     <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
       <Navbar />
@@ -205,7 +207,7 @@ export default function AboutMe() {
             lineHeight: 1.9,
             marginBottom: '18px',
           }}>
-            <strong>أرحب بكم هنا في</strong> {introPara1}
+            <strong>{tr('welcome_prefix')}</strong> {introPara1}
           </p>
 
           <p style={{
@@ -232,7 +234,7 @@ export default function AboutMe() {
           <div style={{ clear: 'both' }} />
 
           {/* ─── مجالاتي المهنية ──────────────────────────────────────── */}
-          <SectionHeading>مجالاتي المهنية</SectionHeading>
+          <SectionHeading>{tr('about_career_heading')}</SectionHeading>
 
           <p style={{
             fontFamily: 'Cairo, sans-serif',
@@ -272,11 +274,11 @@ export default function AboutMe() {
             lineHeight: 1.9,
             marginTop: '20px',
           }}>
-            ثلاث جوائز عديدة خلال مسيرتي القيادية، إذ أصنفت ضمن : <strong>أفضل 100 رئيس تنفيذي في المنطقة</strong>، وضمن <strong>أقوى 20 مديراً تنفيذياً في مجال الضيافة</strong> بالمنطقة، وثلاث مرات ثلاث شركات قدمتها على جائزة أفضل بيئة عمل في المملكة.
+            {awardsText}
           </p>
 
           {/* ─── مؤهلاتي ──────────────────────────────────────────────── */}
-          <SectionHeading>مؤهلاتي</SectionHeading>
+          <SectionHeading>{tr('about_qualifications_heading')}</SectionHeading>
 
           <ul style={{ padding: '0 20px', margin: '0', listStyle: 'disc' }}>
             {displayedQualifications.map((q, i) => (
@@ -293,7 +295,7 @@ export default function AboutMe() {
           </ul>
 
           {/* ─── هواياتي ───────────────────────────────────────────────── */}
-          <SectionHeading>هواياتي</SectionHeading>
+          <SectionHeading>{tr('about_hobbies_heading')}</SectionHeading>
 
           <p style={{
             fontFamily: 'Cairo, sans-serif',
