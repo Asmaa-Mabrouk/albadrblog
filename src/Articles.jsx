@@ -232,7 +232,7 @@ export default function Articles() {
   const { lang, t: tr, dir } = useLanguage()
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('id', { ascending: false }).then(({ data }) => {
+    supabase.from('articles').select('*').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).then(({ data }) => {
       setArticles(data || [])
     })
   }, [])

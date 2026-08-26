@@ -26,71 +26,75 @@ function Hero() {
   const [rawFeatured, setRawFeatured] = useState(null)
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('featured', { ascending: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
+    supabase.from('articles').select('*').order('featured', { ascending: false }).order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
       if (data && data[0]) setRawFeatured(data[0])
     })
   }, [])
 
   const featured = localizeArticle(rawFeatured, lang)
+  const bgImage = rawFeatured?.img || heroImg
 
   return (
     <section style={{
       position: 'relative', width: '100%', minHeight: '100vh',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
+      display: 'flex', alignItems: 'flex-end',
+      overflow: 'hidden',
     }}>
-      {/* Hero background photo */}
+      {/* Full-bleed article photo, subtly zoomed for depth */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: `url(${heroImg})`,
+        backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        backgroundPosition: 'center 30%',
         backgroundRepeat: 'no-repeat',
+        transform: 'scale(1.05)',
       }} />
-      {/* White colour wash */}
+      {/* Editorial gradient — dark from the bottom for legible text, subtle vignette from the sides */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundColor: 'rgba(255,255,255,0.55)',
-      }} />
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.95) 85%, rgba(255,255,255,1) 100%)',
+        background: 'linear-gradient(to top, rgba(4,20,28,0.96) 0%, rgba(4,20,28,0.75) 30%, rgba(4,20,28,0.25) 60%, rgba(4,20,28,0.05) 100%)',
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to left, rgba(255,255,255,0.35) 0%, transparent 55%)',
+        background: 'linear-gradient(to right, rgba(4,20,28,0.5) 0%, transparent 30%, transparent 70%, rgba(4,20,28,0.5) 100%)',
+      }} />
+      {/* Thin gold accent line, top */}
+      <div style={{
+        position: 'absolute', top: 0, insetInline: 0, height: '4px',
+        background: 'linear-gradient(to left, #c8a96e, #e8c98e, #14b8a6)',
       }} />
 
-      {/* Main content — vertically centered */}
+      {/* Content — bottom-anchored, editorial-style */}
       <div style={{
         position: 'relative', zIndex: 10,
-        width: '100%', textAlign: 'center',
-        padding: '0 24px',
+        width: '100%', maxWidth: '900px', margin: '0 auto',
+        padding: '0 24px 100px', textAlign: 'center',
       }}>
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '22px' }}>
           <span style={{
-            backgroundColor: '#0d7377', color: '#ffffff',
-            fontSize: '14px', fontWeight: '500',
-            padding: '6px 18px', borderRadius: '999px',
-            fontFamily: 'Cairo, sans-serif',
+            backgroundColor: 'rgba(20,184,166,0.16)', color: '#5eead4',
+            border: '1px solid rgba(94,234,212,0.4)',
+            fontSize: '13px', fontWeight: '600',
+            padding: '6px 20px', borderRadius: '999px',
+            fontFamily: 'Cairo, sans-serif', letterSpacing: '0.02em',
           }}>
-            {tr('latest_article_pill')}
+            {featured?.category ? `${tr('latest_article_pill')} · ${featured.category}` : tr('latest_article_pill')}
           </span>
         </div>
         {featured && (
           <>
             <h1 style={{
               fontFamily: 'Playfair Display, Cairo, sans-serif',
-              fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: '700', color: '#04334c',
-              marginBottom: '20px', lineHeight: 1.3,
-              textShadow: '0 2px 12px rgba(255,255,255,0.6)',
+              fontSize: 'clamp(30px, 5.5vw, 56px)', fontWeight: '700', color: '#ffffff',
+              marginBottom: '18px', lineHeight: 1.3,
+              textShadow: '0 2px 24px rgba(0,0,0,0.5)',
             }}>
               {featured.title}
             </h1>
             <p style={{
-              fontFamily: 'Cairo, sans-serif', fontSize: '18px',
-              color: 'rgba(10,61,82,0.88)', maxWidth: '600px',
-              margin: '0 auto 32px', lineHeight: 1.8,
+              fontFamily: 'Cairo, sans-serif', fontSize: '17px',
+              color: 'rgba(255,255,255,0.82)', maxWidth: '620px',
+              margin: '0 auto 36px', lineHeight: 1.85,
             }}>
               {featured.excerpt}
             </p>
@@ -103,7 +107,7 @@ function Hero() {
             fontFamily: 'Cairo, sans-serif', fontWeight: '600',
             border: 'none', borderRadius: '999px', cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '10px',
-            boxShadow: '0 4px 20px rgba(20,184,166,0.4)',
+            boxShadow: '0 4px 24px rgba(20,184,166,0.5)',
             transition: 'background-color 0.2s, transform 0.2s',
           }}
           onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#0d9488'; e.currentTarget.style.transform = 'scale(1.04)' }}
@@ -350,7 +354,7 @@ function ArticlesGrid() {
   const [articles, setArticles] = useState(null)
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('id', { ascending: false }).limit(6).then(({ data }) => {
+    supabase.from('articles').select('*').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(6).then(({ data }) => {
       setArticles(data || [])
     })
   }, [])

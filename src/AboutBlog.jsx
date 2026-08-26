@@ -384,7 +384,7 @@ function PopularArticles() {
   const [popularArticles, setPopularArticles] = useState([])
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('featured', { ascending: false }).order('id', { ascending: false }).limit(2).then(({ data }) => {
+    supabase.from('articles').select('*').order('featured', { ascending: false }).order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(2).then(({ data }) => {
       setPopularArticles(data || [])
     })
   }, [])

@@ -39,7 +39,7 @@ const GRADIENT_PRESETS = [
   'linear-gradient(138deg, #04334c 0%, #085e6a 100%)',
 ]
 
-const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', title_en: '', excerpt_en: '', body_en: '', date_en: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
+const EMPTY_FORM = { id: null, title: '', category: '', excerpt: '', body: '', date: '', sort_date: '', title_en: '', excerpt_en: '', body_en: '', date_en: '', featured: false, bg: GRADIENT_PRESETS[0], img: '' }
 
 // ─── Login screen (real Supabase auth) ──────────────────────────────────────
 function LoginScreen() {
@@ -172,14 +172,21 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
           <input dir={formLang === 'ar' ? 'rtl' : 'ltr'} style={inputStyle} value={form[`date${suf}`] || ''} onChange={e => setForm({ ...form, [`date${suf}`]: e.target.value })} placeholder={formLang === 'ar' ? '١٠ أبريل ٢٠٢٦' : 'April 10, 2026'} />
         </div>
         {formLang === 'ar' && (
-          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '10px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} />
-              مقال مميز
-            </label>
+          <div>
+            <label style={labelStyle}>تاريخ الترتيب (يحدد ترتيب المقال بين البقية، غير ظاهر للزوار)</label>
+            <input type="date" dir="ltr" style={inputStyle} value={form.sort_date || ''} onChange={e => setForm({ ...form, sort_date: e.target.value })} />
           </div>
         )}
       </div>
+
+      {formLang === 'ar' && (
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
+            <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} />
+            مقال مميز (يظهر في أعلى الصفحة الرئيسية)
+          </label>
+        </div>
+      )}
 
       <div style={{ marginBottom: '16px' }}>
         <label style={labelStyle}>لون الخلفية (يظهر إن لم توجد صورة)</label>
@@ -428,7 +435,7 @@ function Dashboard({ userEmail }) {
 
   async function load() {
     setError('')
-    const { data, error } = await supabase.from('articles').select('*').order('id', { ascending: false })
+    const { data, error } = await supabase.from('articles').select('*').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false })
     if (error) setError(error.message)
     else setArticles(data)
   }
@@ -452,7 +459,7 @@ function Dashboard({ userEmail }) {
 
       const record = {
         title: form.title, category: form.category, excerpt: form.excerpt,
-        body: form.body, date: form.date, featured: form.featured,
+        body: form.body, date: form.date, sort_date: form.sort_date || null, featured: form.featured,
         bg: form.bg, img: imgPath,
         title_en: form.title_en || null,
         excerpt_en: form.excerpt_en || null, body_en: form.body_en || null,
