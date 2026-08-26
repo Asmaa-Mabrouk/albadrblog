@@ -390,6 +390,122 @@ function Home() {
   )
 }
 
+// ─── Comments Section ──────────────────────────────────────────────────────────
+function CommentsSection({ articleId }) {
+  const { t } = useTheme()
+  const [comments, setComments] = useState(null)
+  const [name, setName] = useState('')
+  const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function load() {
+    if (!articleId) return
+    const { data } = await supabase.from('article_comments').select('*').eq('article_id', articleId).order('created_at', { ascending: true })
+    setComments(data || [])
+  }
+
+  useEffect(() => { load() }, [articleId])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!name.trim() || !message.trim()) return
+    setSubmitting(true)
+    setError('')
+    const { error } = await supabase.from('article_comments').insert({ article_id: articleId, name: name.trim(), message: message.trim() })
+    if (error) {
+      setError('حدث خطأ أثناء إرسال ردك، حاول مرة أخرى.')
+    } else {
+      setName('')
+      setMessage('')
+      await load()
+    }
+    setSubmitting(false)
+  }
+
+  if (!articleId) return null
+
+  return (
+    <section style={{ padding: '20px 0 60px' }}>
+      <div style={{ maxWidth: '740px', margin: '0 auto', padding: '0 24px' }}>
+        <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '22px', fontWeight: '700', color: t.text, marginBottom: '24px', textAlign: 'right' }}>
+          الردود
+        </h2>
+
+        {comments === null ? (
+          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#9ca3af' }}>جارٍ التحميل...</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '36px' }}>
+            {comments.map(c => (
+              <div key={c.id} style={{ display: 'flex', gap: '14px', textAlign: 'right', justifyContent: 'flex-end' }}>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.text, marginBottom: '4px' }}>
+                    <span style={{ fontStyle: 'italic', fontWeight: '600' }}>{c.name}</span>:
+                  </p>
+                  <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: t.textBody, lineHeight: 1.9, whiteSpace: 'pre-line' }}>
+                    {c.message}
+                  </p>
+                  <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '12px', color: '#9ca3af', marginTop: '6px' }}>
+                    {new Date(c.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
+                </div>
+                <div style={{
+                  width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0,
+                  backgroundColor: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#9ca3af', fontFamily: 'Cairo, sans-serif', fontWeight: '700', fontSize: '16px',
+                }}>
+                  {c.name.charAt(0)}
+                </div>
+              </div>
+            ))}
+            {comments.length === 0 && (
+              <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#9ca3af', textAlign: 'right' }}>
+                لا توجد ردود بعد. كن أول من يعلق.
+              </p>
+            )}
+          </div>
+        )}
+
+        <div style={{ backgroundColor: t.bgSoft, borderRadius: '12px', padding: '24px' }}>
+          <h3 style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', fontWeight: '700', color: t.text, marginBottom: '16px', textAlign: 'right' }}>
+            اترك ردًا
+          </h3>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <input
+              type="text" dir="rtl" placeholder="اسمك" value={name} onChange={e => setName(e.target.value)}
+              required
+              style={{
+                fontFamily: 'Cairo, sans-serif', fontSize: '14px', padding: '10px 14px',
+                borderRadius: '8px', border: `1px solid ${t.border}`, backgroundColor: t.inputBg,
+                color: t.text, textAlign: 'right', outline: 'none',
+              }}
+            />
+            <textarea
+              dir="rtl" placeholder="اكتب تعليقًا..." value={message} onChange={e => setMessage(e.target.value)}
+              rows={4} required
+              style={{
+                fontFamily: 'Cairo, sans-serif', fontSize: '14px', padding: '10px 14px',
+                borderRadius: '8px', border: `1px solid ${t.border}`, backgroundColor: t.inputBg,
+                color: t.text, textAlign: 'right', outline: 'none', resize: 'vertical',
+              }}
+            />
+            {error && <p style={{ color: '#dc2626', fontSize: '13px', fontFamily: 'Cairo, sans-serif' }}>{error}</p>}
+            <div>
+              <button type="submit" disabled={submitting} style={{
+                backgroundColor: '#14b8a6', color: '#fff', border: 'none',
+                padding: '10px 28px', fontSize: '14px', fontFamily: 'Cairo, sans-serif', fontWeight: '700',
+                borderRadius: '8px', cursor: 'pointer', opacity: submitting ? 0.6 : 1,
+              }}>
+                {submitting ? 'جارٍ الإرسال...' : 'تعليق'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ─── Single Article Page ──────────────────────────────────────────────────────
 function ArticlePage() {
   const { id } = useParams()
@@ -489,6 +605,7 @@ function ArticlePage() {
           </div>
         </section>
 
+        <CommentsSection articleId={rawArticle?.id} />
         <Newsletter bgColor="#f0faf9" />
       </main>
       <Footer />
