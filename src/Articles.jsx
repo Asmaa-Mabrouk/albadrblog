@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.webp'
 import { supabase } from './supabaseClient'
@@ -230,6 +231,8 @@ export default function Articles() {
   const [articles, setArticles] = useState(null)
   const { t } = useTheme()
   const { lang, t: tr, dir } = useLanguage()
+  const [searchParams] = useSearchParams()
+  const searchQuery = (searchParams.get('q') || '').trim().toLowerCase()
 
   useEffect(() => {
     supabase.from('articles').select('id, title, category, excerpt, date, sort_date, featured, bg, img, title_en, excerpt_en, date_en').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).then(({ data }) => {
@@ -238,11 +241,14 @@ export default function Articles() {
   }, [])
 
   const localized = (articles || []).map(a => localizeArticle(a, lang))
+  const searched = searchQuery
+    ? localized.filter(a => (a.title || '').toLowerCase().includes(searchQuery) || (a.excerpt || '').toLowerCase().includes(searchQuery))
+    : localized
   const allLabel = tr('all_category')
-  const categories = [allLabel, ...new Set(localized.map(a => a.category))]
+  const categories = [allLabel, ...new Set(searched.map(a => a.category))]
   const filtered = !articles ? [] : activeCategory === null
-    ? localized
-    : localized.filter(a => a.category === activeCategory)
+    ? searched
+    : searched.filter(a => a.category === activeCategory)
 
   return (
     <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
@@ -269,7 +275,7 @@ export default function Articles() {
             ) : (
               <div style={{ textAlign: 'center', padding: '60px 0' }}>
                 <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#9ca3af' }}>
-                  لا توجد مقالات في هذا التصنيف حاليًا.
+                  {searchQuery ? `لا توجد نتائج بحث عن "${searchParams.get('q')}".` : 'لا توجد مقالات في هذا التصنيف حاليًا.'}
                 </p>
               </div>
             )}

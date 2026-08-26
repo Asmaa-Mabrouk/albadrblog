@@ -149,7 +149,10 @@ export const AlbadrMark = ({ size = 40, color = '#14b8a6' }) => (
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const location = useLocation()
+  const navigate = useNavigate()
   const { isDark, toggleTheme, t } = useTheme()
   const { t: tr } = useLanguage()
 
@@ -159,7 +162,15 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => { setMenuOpen(false) }, [location.pathname])
+  useEffect(() => { setMenuOpen(false); setSearchOpen(false) }, [location.pathname])
+
+  function handleSearchSubmit(e) {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    navigate(`/articles?q=${encodeURIComponent(searchQuery.trim())}`)
+    setSearchOpen(false)
+    setSearchQuery('')
+  }
 
   const navLinks = [
     { label: tr('nav_about'), to: '/about' },
@@ -233,7 +244,7 @@ export function Navbar() {
         {/* Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {/* Search — desktop only */}
-          <button aria-label={tr('search')} className="desktop-only" style={{
+          <button aria-label={tr('search')} className="desktop-only" onClick={() => setSearchOpen(o => !o)} style={{
             color: '#ffffff', opacity: 0.8, background: 'none', border: 'none',
             cursor: 'pointer', padding: '8px', borderRadius: '8px',
             alignItems: 'center', transition: 'opacity 0.2s',
@@ -283,6 +294,34 @@ export function Navbar() {
           </button>
         </div>
       </div>
+
+      {/* Search dropdown */}
+      {searchOpen && (
+        <div style={{
+          borderTop: '1px solid rgba(255,255,255,0.1)', backgroundColor: t.navBg,
+          padding: '16px clamp(12px, 3vw, 48px)',
+        }}>
+          <form onSubmit={handleSearchSubmit} style={{ maxWidth: '1600px', margin: '0 auto', display: 'flex', gap: '10px' }}>
+            <input
+              type="text" autoFocus dir="rtl"
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              placeholder="ابحث في المقالات..."
+              style={{
+                flex: 1, padding: '10px 16px', borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.08)',
+                color: '#ffffff', fontFamily: 'Cairo, sans-serif', fontSize: '14px', outline: 'none',
+              }}
+            />
+            <button type="submit" style={{
+              backgroundColor: '#14b8a6', color: '#fff', border: 'none',
+              padding: '10px 22px', borderRadius: '8px', cursor: 'pointer',
+              fontFamily: 'Cairo, sans-serif', fontSize: '14px', fontWeight: '600',
+            }}>
+              بحث
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
@@ -597,4 +636,23 @@ export function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])
   return null
+}
+
+// ─── Page loader — shown while a lazy route chunk or its data is loading ────
+export function PageLoader() {
+  const { t } = useTheme()
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', gap: '16px',
+      backgroundColor: t.bg,
+    }}>
+      <div style={{
+        width: '36px', height: '36px', borderRadius: '50%',
+        border: '3px solid rgba(20,184,166,0.2)', borderTopColor: '#14b8a6',
+        animation: 'abd-spin 0.8s linear infinite',
+      }} />
+      <style>{'@keyframes abd-spin { to { transform: rotate(360deg); } }'}</style>
+    </div>
+  )
 }

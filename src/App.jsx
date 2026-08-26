@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { HashRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
+import { HashRouter, Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ThemeProvider, useTheme, ArticleCard as SharedArticleCard, Newsletter } from './shared'
 import './index.css'
 import heroImg from './assets/hero_new.webp'
@@ -8,7 +8,7 @@ import profileAvatarImg from './assets/badr_profile.webp'
 import { supabase } from './supabaseClient'
 import { LanguageProvider, useLanguage, localizeArticle, usePageContent } from './LanguageContext'
 import {
-  Navbar, Footer, ScrollToTop,
+  Navbar, Footer, ScrollToTop, PageLoader,
   ArrowLeftIcon, CalendarIcon,
   EmailIcon, LinkedInIcon, YouTubeIcon, TwitterIcon,
 } from './shared'
@@ -568,11 +568,11 @@ function ArticlePage() {
 
   if (article === undefined) {
     return (
-      <div dir={dir} style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+      <div dir={dir} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: t.bg }}>
         <Navbar />
-        <main style={{ paddingTop: '140px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#9ca3af' }}>جارٍ التحميل...</p>
-        </main>
+        <div style={{ flex: 1 }}>
+          <PageLoader />
+        </div>
         <Footer />
       </div>
     )
@@ -580,9 +580,9 @@ function ArticlePage() {
 
   if (!article) {
     return (
-      <div dir={dir} style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+      <div dir={dir} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: t.bg }}>
         <Navbar />
-        <main style={{ paddingTop: '140px', textAlign: 'center' }}>
+        <main style={{ flex: 1, paddingTop: '140px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '18px', color: t.text }}>لم يتم العثور على المقال.</p>
           <button onClick={() => navigate('/articles')} style={{ marginTop: '16px', background: 'none', border: 'none', color: '#14b8a6', cursor: 'pointer', fontFamily: 'Cairo, sans-serif', fontSize: '15px', fontWeight: '700' }}>
             العودة إلى المقالات
@@ -662,6 +662,27 @@ function ArticlePage() {
   )
 }
 
+// ─── Routed content with a per-path key, so React fully remounts the page
+// component on every navigation instead of potentially reusing stale state
+// across lazy-loaded routes.
+function RoutedContent() {
+  const location = useLocation()
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutMe />} />
+        <Route path="/blog" element={<AboutBlog />} />
+        <Route path="/books" element={<Books />} />
+        <Route path="/articles" element={<Articles />} />
+        <Route path="/article/:id" element={<ArticlePage />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+    </Suspense>
+  )
+}
+
 // ─── App with Router ──────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -669,18 +690,7 @@ export default function App() {
       <ThemeProvider>
         <HashRouter>
           <ScrollToTop />
-          <Suspense fallback={null}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<AboutMe />} />
-              <Route path="/blog" element={<AboutBlog />} />
-              <Route path="/books" element={<Books />} />
-              <Route path="/articles" element={<Articles />} />
-              <Route path="/article/:id" element={<ArticlePage />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/admin" element={<Admin />} />
-            </Routes>
-          </Suspense>
+          <RoutedContent />
         </HashRouter>
       </ThemeProvider>
     </LanguageProvider>
