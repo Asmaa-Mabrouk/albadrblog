@@ -667,13 +667,13 @@ export default function Books() {
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <PageHero pill="الكتب" heading="كتبي" subtitle="إصدارات في القيادة والنجاح المهني" />
-        <AuthorIntro />
         <MainBookFeature />
         <WhyRead />
         <ReviewsSection />
         <DigitalEdition />
         <ChaptersGrid />
         <CtaStrip />
+        <AuthorIntro />
         <ContactCustomerService />
       </main>
       <Footer />
