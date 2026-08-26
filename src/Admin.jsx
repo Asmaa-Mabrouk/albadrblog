@@ -230,6 +230,81 @@ const PAGES_CONFIG = {
       { key: 'profile_bio', label: 'نبذة عني (النص)' },
     ],
   },
+  about: {
+    label: 'تعرف علي',
+    sections: [
+      { key: 'about_intro_1', label: 'الفقرة التعريفية الأولى' },
+      { key: 'about_intro_2', label: 'الفقرة التعريفية الثانية' },
+      { key: 'about_intro_3', label: 'الفقرة التعريفية الثالثة' },
+      {
+        key: 'career_items', label: 'محطاتي المهنية', type: 'list',
+        itemFields: [{ key: 'title', label: 'المسمى الوظيفي والتاريخ' }, { key: 'body', label: 'الوصف (اختياري)' }],
+      },
+      {
+        key: 'qualifications', label: 'مؤهلاتي', type: 'list',
+        itemFields: [{ key: 'text', label: 'المؤهل' }],
+      },
+      { key: 'hobbies_text', label: 'هواياتي (النص)' },
+    ],
+  },
+}
+
+function emptyListItem(itemFields) {
+  const obj = {}
+  for (const f of itemFields) obj[f.key] = ''
+  return obj
+}
+
+function ListSectionEditor({ section, valueAr, valueEn, onChange }) {
+  const itemsAr = (() => { try { return JSON.parse(valueAr || '[]') } catch { return [] } })()
+  const itemsEn = (() => { try { return JSON.parse(valueEn || '[]') } catch { return [] } })()
+  // Keep both language arrays the same length, indexed together.
+  const count = Math.max(itemsAr.length, itemsEn.length)
+  const rows = Array.from({ length: count }, (_, i) => ({
+    ar: itemsAr[i] || emptyListItem(section.itemFields),
+    en: itemsEn[i] || emptyListItem(section.itemFields),
+  }))
+
+  function updateRow(i, lang, fieldKey, value) {
+    const newRows = rows.map((r, idx) => idx === i ? { ...r, [lang]: { ...r[lang], [fieldKey]: value } } : r)
+    onChange(JSON.stringify(newRows.map(r => r.ar)), JSON.stringify(newRows.map(r => r.en)))
+  }
+
+  function addRow() {
+    const newRows = [...rows, { ar: emptyListItem(section.itemFields), en: emptyListItem(section.itemFields) }]
+    onChange(JSON.stringify(newRows.map(r => r.ar)), JSON.stringify(newRows.map(r => r.en)))
+  }
+
+  function removeRow(i) {
+    const newRows = rows.filter((_, idx) => idx !== i)
+    onChange(JSON.stringify(newRows.map(r => r.ar)), JSON.stringify(newRows.map(r => r.en)))
+  }
+
+  return (
+    <div>
+      {rows.map((row, i) => (
+        <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '14px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: '600' }}>#{i + 1}</span>
+            <button type="button" onClick={() => removeRow(i)} style={{ ...buttonDanger, padding: '3px 10px', fontSize: '12px' }}>حذف</button>
+          </div>
+          {section.itemFields.map(field => (
+            <div key={field.key} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '8px' }}>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px' }}>🇸🇦 {field.label}</label>
+                <input dir="rtl" style={inputStyle} value={row.ar[field.key] || ''} onChange={e => updateRow(i, 'ar', field.key, e.target.value)} />
+              </div>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px' }}>🌐 {field.label} (English)</label>
+                <input dir="ltr" style={inputStyle} value={row.en[field.key] || ''} onChange={e => updateRow(i, 'en', field.key, e.target.value)} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+      <button type="button" onClick={addRow} style={buttonSecondary}>+ إضافة عنصر</button>
+    </div>
+  )
 }
 
 function PageContentEditor({ pageKey }) {
@@ -290,22 +365,31 @@ function PageContentEditor({ pageKey }) {
       {config.sections.map(section => (
         <div key={section.key} style={{ backgroundColor: '#fff', borderRadius: '10px', padding: '18px 20px', marginBottom: '14px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
           <p style={{ fontWeight: '700', fontSize: '14px', color: '#111827', marginBottom: '12px' }}>{section.label}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <div>
-              <label style={labelStyle}>🇸🇦 العربية</label>
-              <textarea dir="rtl" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
-                value={values[section.key].ar}
-                onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], ar: e.target.value } })}
-              />
+          {section.type === 'list' ? (
+            <ListSectionEditor
+              section={section}
+              valueAr={values[section.key].ar}
+              valueEn={values[section.key].en}
+              onChange={(ar, en) => setValues({ ...values, [section.key]: { ar, en } })}
+            />
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <div>
+                <label style={labelStyle}>🇸🇦 العربية</label>
+                <textarea dir="rtl" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
+                  value={values[section.key].ar}
+                  onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], ar: e.target.value } })}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>🌐 English</label>
+                <textarea dir="ltr" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
+                  value={values[section.key].en}
+                  onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], en: e.target.value } })}
+                />
+              </div>
             </div>
-            <div>
-              <label style={labelStyle}>🌐 English</label>
-              <textarea dir="ltr" rows={2} style={{ ...inputStyle, resize: 'vertical' }}
-                value={values[section.key].en}
-                onChange={e => setValues({ ...values, [section.key]: { ...values[section.key], en: e.target.value } })}
-              />
-            </div>
-          </div>
+          )}
         </div>
       ))}
       <button style={{ ...buttonPrimary, opacity: saving ? 0.6 : 1 }} disabled={saving} onClick={handleSave}>
@@ -407,7 +491,7 @@ function Dashboard({ userEmail }) {
         </div>
         <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '20px' }}>مسجّل الدخول باسم: {userEmail}</p>
 
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
           <button onClick={() => setView('articles')} style={{
             padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
             fontSize: '14px', fontWeight: '600',
@@ -415,16 +499,18 @@ function Dashboard({ userEmail }) {
             borderBottom: view === 'articles' ? '2px solid #14b8a6' : '2px solid transparent',
             marginBottom: '-1px',
           }}>المقالات</button>
-          <button onClick={() => setView('home')} style={{
-            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
-            fontSize: '14px', fontWeight: '600',
-            color: view === 'home' ? '#14b8a6' : '#9ca3af',
-            borderBottom: view === 'home' ? '2px solid #14b8a6' : '2px solid transparent',
-            marginBottom: '-1px',
-          }}>الصفحة الرئيسية</button>
+          {Object.entries(PAGES_CONFIG).map(([key, cfg]) => (
+            <button key={key} onClick={() => setView(key)} style={{
+              padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
+              fontSize: '14px', fontWeight: '600',
+              color: view === key ? '#14b8a6' : '#9ca3af',
+              borderBottom: view === key ? '2px solid #14b8a6' : '2px solid transparent',
+              marginBottom: '-1px',
+            }}>{cfg.label}</button>
+          ))}
         </div>
 
-        {view === 'home' && <PageContentEditor pageKey="home" />}
+        {PAGES_CONFIG[view] && <PageContentEditor pageKey={view} />}
 
         {view === 'articles' && (
           <>

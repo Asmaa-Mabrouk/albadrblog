@@ -105,5 +105,18 @@ export function usePageContent(page) {
     return row.content_ar || fallbackAr
   }
 
-  return { get, loading: rows === null }
+  function getList(sectionKey, fallback = []) {
+    const row = (rows || []).find(r => r.section_key === sectionKey)
+    if (!row) return fallback
+    const raw = lang === 'en' ? (row.content_en || row.content_ar) : row.content_ar
+    if (!raw) return fallback
+    try {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) && parsed.length ? parsed : fallback
+    } catch {
+      return fallback
+    }
+  }
+
+  return { get, getList, loading: rows === null }
 }
