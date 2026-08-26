@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { HashRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, useTheme, ArticleCard as SharedArticleCard, Newsletter } from './shared'
 import './index.css'
@@ -12,12 +12,16 @@ import {
   ArrowLeftIcon, CalendarIcon,
   EmailIcon, LinkedInIcon, YouTubeIcon, TwitterIcon,
 } from './shared'
-import AboutMe from './AboutMe'
-import AboutBlog from './AboutBlog'
-import Books from './Books'
-import Articles from './Articles'
-import Events from './Events'
-import Admin from './Admin'
+// Route-level code splitting: these pages (and Admin's rich text editor in
+// particular, which pulls in a large third-party library) are only fetched
+// when someone actually visits that page, instead of being downloaded by
+// every visitor up front.
+const AboutMe = lazy(() => import('./AboutMe'))
+const AboutBlog = lazy(() => import('./AboutBlog'))
+const Books = lazy(() => import('./Books'))
+const Articles = lazy(() => import('./Articles'))
+const Events = lazy(() => import('./Events'))
+const Admin = lazy(() => import('./Admin'))
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 function Hero() {
@@ -352,7 +356,7 @@ function ArticleCard({ article }) {
       <div style={{ height: '240px', background: article.bg, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {article.img ? (
           <>
-            <img src={article.img} alt={article.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+            <img src={article.img} alt={article.title} loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.18) 0%, rgba(4,51,76,0.55) 100%)' }} />
           </>
         ) : (
@@ -599,7 +603,7 @@ function ArticlePage() {
         }}>
           {article.img && (
             <>
-              <img src={article.img} alt={article.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={article.img} alt={article.title} loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.25) 0%, rgba(4,51,76,0.85) 100%)' }} />
             </>
           )}
@@ -661,16 +665,18 @@ export default function App() {
       <ThemeProvider>
         <HashRouter>
           <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<AboutMe />} />
-            <Route path="/blog" element={<AboutBlog />} />
-            <Route path="/books" element={<Books />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/admin" element={<Admin />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<AboutMe />} />
+              <Route path="/blog" element={<AboutBlog />} />
+              <Route path="/books" element={<Books />} />
+              <Route path="/articles" element={<Articles />} />
+              <Route path="/article/:id" element={<ArticlePage />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/admin" element={<Admin />} />
+            </Routes>
+          </Suspense>
         </HashRouter>
       </ThemeProvider>
     </LanguageProvider>
