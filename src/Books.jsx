@@ -130,7 +130,9 @@ function AuthorIntro() {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <button style={{
+          <button
+            onClick={() => window.open('https://www.neelwafurat.com/locate.aspx?mode=1&search=id&entry=lb255216', '_blank', 'noopener')}
+            style={{
             backgroundColor: '#14b8a6', color: '#fff', border: 'none',
             padding: '12px 32px', fontSize: '15px', fontFamily: 'Cairo, sans-serif', fontWeight: '600',
             borderRadius: '6px', cursor: 'pointer', transition: 'background-color 0.2s',
@@ -223,7 +225,9 @@ function MainBookFeature() {
 
             {/* CTA buttons */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'flex-end' }}>
-              <button style={{
+              <button
+                onClick={() => window.open('https://www.neelwafurat.com/locate.aspx?mode=1&search=id&entry=lb255216', '_blank', 'noopener')}
+                style={{
                 backgroundColor: '#14b8a6', color: '#fff',
                 padding: '11px 26px', fontSize: '14px',
                 fontFamily: 'Cairo, sans-serif', fontWeight: '700',
@@ -567,7 +571,9 @@ function CtaStrip() {
         <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: '700', color: '#ffffff', marginBottom: '24px' }}>
           اشتر الكتاب الآن
         </h2>
-        <button style={{
+        <button
+          onClick={() => window.open('https://www.neelwafurat.com/locate.aspx?mode=1&search=id&entry=lb255216', '_blank', 'noopener')}
+          style={{
           backgroundColor: '#ffffff', color: '#04334c',
           padding: '14px 36px', fontSize: '16px',
           fontFamily: 'Cairo, sans-serif', fontWeight: '700',
