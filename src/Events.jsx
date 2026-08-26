@@ -24,32 +24,32 @@ const statsData = [
 const podcasts = [
   {
     ep: '٠١',
-    title: 'القيادة الحقيقية — من المنصب إلى الأثر',
-    desc: 'نقاش عميق حول الفرق بين من يحمل لقب قائد ومن يترك أثراً حقيقياً في المؤسسة والمجتمع.',
-    platform: 'بودكاست إدارة',
-    duration: '٤٨ دقيقة',
+    title: 'القيادة والقيادة في تجربة د. بدر البدر ودروس من قطاعات مختلفة',
+    desc: 'حلقة من بودكاست ديوانية علم حول القدوة والقيادة، بمشاركة د. بدر البدر ودروس مستفادة من قطاعات عمل مختلفة.',
+    platform: 'ديوانية علم',
+    link: 'https://podcasts.apple.com/kw/podcast/%D8%A7%D9%84%D9%82%D8%AF%D9%88%D8%A9-%D9%88%D8%A7%D9%84%D9%82%D9%8A%D8%A7%D8%AF%D8%A9-%D9%85%D8%B9-%D8%AF-%D8%A8%D8%AF%D8%B1-%D8%A7%D9%84%D8%A8%D8%AF%D8%B1/id1528843937?i=1000519007455',
     bg: 'linear-gradient(145deg, #04334c 0%, #0d7377 100%)',
     featured: true,
   },
   {
     ep: '٠٢',
-    title: 'ريادة الأعمال في المملكة: واقع وتحديات',
-    platform: 'بودكاست رواد',
-    duration: '٥٢ دقيقة',
+    title: 'من حرم الجامعة، للعصامية والحياة الوظيفية',
+    platform: 'ديوانية علم',
+    link: 'https://podcasts.apple.com/kw/podcast/%D9%85%D9%86-%D8%AD%D8%B1%D9%85-%D8%A7%D9%84%D8%AC%D8%A7%D9%85%D8%B9%D8%A9-%D9%84%D9%84%D8%B9%D8%B5%D8%A7%D9%85%D9%8A-%D8%A9-%D9%88%D8%A7%D9%84%D8%AD%D9%8A%D8%A7%D8%A9-%D8%A7%D9%84%D9%88%D8%B8%D9%8A%D9%81%D9%8A%D8%A9-%D9%85%D8%B9-%D8%AF-%D8%A8%D8%AF%D8%B1-%D8%A7%D9%84%D8%A8%D8%AF%D8%B1/id1528843937?i=1000519007397',
     bg: 'linear-gradient(145deg, #0d5c63 0%, #14b8a6 100%)',
   },
   {
     ep: '٠٣',
-    title: 'التحول المؤسسي: كيف تقود التغيير من الداخل؟',
-    platform: 'بودكاست المسيرة',
-    duration: '٣٩ دقيقة',
+    title: 'من الصفر والبدايات المبكرة في رحلة د. بدر البدر',
+    platform: 'ديوانية علم',
+    link: 'https://podcasts.apple.com/kw/podcast/%D9%85%D9%86-%D8%A7%D9%84%D8%B5%D9%81%D8%B1-%D9%85%D8%B9-%D8%AF-%D8%A8%D8%AF%D8%B1-%D8%A7%D9%84%D8%A8%D8%AF%D8%B1/id1528843937?i=1000519007513',
     bg: 'linear-gradient(145deg, #072a3d 0%, #0d7377 100%)',
   },
   {
     ep: '٠٤',
-    title: 'تمكين الشباب: مسؤولية من؟',
-    platform: 'بودكاست نجوم',
-    duration: '٤٤ دقيقة',
+    title: 'تجارب صنعت في مؤسسة محمد بن سلمان مع د. بدر البدر',
+    platform: 'ديوانية علم',
+    link: 'https://podcasts.apple.com/kw/podcast/%D8%AA%D8%AC%D8%A7%D8%B1%D8%A8-%D8%B5-%D9%86%D8%B9%D8%AA-%D8%A8%D9%85%D8%B3%D9%83-%D8%A7%D9%84%D8%AE%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B9-%D8%AF-%D8%A8%D8%AF%D8%B1-%D8%A7%D9%84%D8%A8%D8%AF%D8%B1/id1528843937?i=1000519007567',
     bg: 'linear-gradient(145deg, #04334c 0%, #0a5468 100%)',
   },
 ]
@@ -397,6 +397,7 @@ function FeaturedPodcast({ pod }) {
         </div>
         {/* Play button */}
         <div
+          onClick={() => window.open(pod.link, '_blank', 'noopener')}
           style={{
             position: 'relative', zIndex: 1,
             width: '64px', height: '64px', borderRadius: '50%',
@@ -462,19 +463,9 @@ function FeaturedPodcast({ pod }) {
             <AppleIcon />
             <HeadphonesIcon />
           </div>
-          {/* Duration + button */}
+          {/* Listen button */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{
-              fontFamily: 'Cairo, sans-serif', fontSize: '13px',
-              color: 'rgba(255,255,255,0.5)',
-              display: 'flex', alignItems: 'center', gap: '5px',
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              {pod.duration}
-            </span>
-            <button style={{
+            <button onClick={() => window.open(pod.link, '_blank', 'noopener')} style={{
               backgroundColor: '#14b8a6', color: '#ffffff',
               padding: '9px 22px', fontSize: '13px',
               fontFamily: 'Cairo, sans-serif', fontWeight: '700',
@@ -501,6 +492,7 @@ function PodcastCard({ pod }) {
   const [playHovered, setPlayHovered] = useState(false)
   return (
     <div
+      onClick={() => window.open(pod.link, '_blank', 'noopener')}
       style={{
         borderRadius: '20px', overflow: 'hidden',
         background: 'rgba(255,255,255,0.05)',
@@ -575,18 +567,7 @@ function PodcastCard({ pod }) {
         }}>
           {pod.title}
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Duration */}
-          <span style={{
-            fontFamily: 'Cairo, sans-serif', fontSize: '12px',
-            color: 'rgba(255,255,255,0.45)',
-            display: 'flex', alignItems: 'center', gap: '4px',
-          }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-            {pod.duration}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           {/* Platform icons */}
           <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <SpotifyIcon />
