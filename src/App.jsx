@@ -51,7 +51,7 @@ function Hero() {
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(4,20,28,0.55) 0%, rgba(4,20,28,0.75) 100%)',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.55) 100%)',
       }} />
       {/* Subtle color texture on top of the backdrop */}
       <div style={{
@@ -91,10 +91,10 @@ function Hero() {
             transition: 'transform 0.6s ease',
           }} />
         )}
-        {/* Overlay — light wash that keeps text legible over the photo */}
+        {/* Overlay — dark wash that keeps text legible over the photo */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.25) 100%)',
+          background: 'linear-gradient(to top, rgba(4,20,28,0.92) 0%, rgba(4,20,28,0.6) 45%, rgba(4,20,28,0.3) 100%)',
         }} />
         {/* Thin gold/teal accent line, top */}
         <div style={{
@@ -109,8 +109,8 @@ function Hero() {
         }}>
           <div style={{ marginBottom: '20px' }}>
             <span style={{
-              backgroundColor: 'rgba(20,184,166,0.15)', color: '#0d7377',
-              border: '1px solid rgba(13,115,119,0.3)',
+              backgroundColor: 'rgba(20,184,166,0.16)', color: '#5eead4',
+              border: '1px solid rgba(94,234,212,0.4)',
               fontSize: '13px', fontWeight: '600',
               padding: '6px 20px', borderRadius: '999px',
               fontFamily: 'Cairo, sans-serif', letterSpacing: '0.02em',
@@ -122,14 +122,14 @@ function Hero() {
             <>
               <h1 style={{
                 fontFamily: 'Playfair Display, Cairo, sans-serif',
-                fontSize: 'clamp(26px, 4.5vw, 42px)', fontWeight: '700', color: '#04334c',
+                fontSize: 'clamp(26px, 4.5vw, 42px)', fontWeight: '700', color: '#ffffff',
                 marginBottom: '16px', lineHeight: 1.3,
               }}>
                 {featured.title}
               </h1>
               <p style={{
                 fontFamily: 'Cairo, sans-serif', fontSize: '16px',
-                color: 'rgba(4,51,76,0.82)', maxWidth: '560px',
+                color: 'rgba(255,255,255,0.82)', maxWidth: '560px',
                 margin: '0 auto 30px', lineHeight: 1.85,
               }}>
                 {featured.excerpt}
