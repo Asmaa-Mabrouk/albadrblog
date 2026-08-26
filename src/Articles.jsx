@@ -231,7 +231,7 @@ export default function Articles() {
   const [activeCategory, setActiveCategory] = useState(null) // null = "all"
   const [articles, setArticles] = useState(null)
   const { t } = useTheme()
-  const { lang, t: tr } = useLanguage()
+  const { lang, t: tr, dir } = useLanguage()
 
   useEffect(() => {
     supabase.from('articles').select('*').order('id', { ascending: false }).then(({ data }) => {
@@ -247,7 +247,7 @@ export default function Articles() {
     : localized.filter(a => a.category === activeCategory)
 
   return (
-    <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
+    <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <PageHero pill="المقالات" heading="مقالاتي" subtitle="أفكار وتجارب في القيادة والنجاح" />

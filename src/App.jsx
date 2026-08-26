@@ -284,6 +284,8 @@ function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { t } = useTheme()
+  const { dir } = useLanguage()
+  const textAlign = dir === 'ltr' ? 'left' : 'right'
   return (
     <div style={{ backgroundColor: t.surface, borderRadius: '12px', overflow: 'hidden', boxShadow: hovered ? t.shadowHover : t.shadow, transform: hovered ? 'translateY(-4px)' : 'translateY(0)', transition: 'all 0.25s ease', cursor: 'pointer' }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -311,8 +313,8 @@ function ArticleCard({ article }) {
           <span style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: '#9ca3af' }}>{article.date}</span>
           <span style={{ color: '#14b8a6' }}><CalendarIcon /></span>
         </div>
-        <h3 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '18px', fontWeight: '700', color: t.text, marginBottom: '10px', lineHeight: 1.4, textAlign: 'right' }}>{article.title}</h3>
-        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted, lineHeight: 1.8, marginBottom: '16px', textAlign: 'right', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.excerpt}</p>
+        <h3 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '18px', fontWeight: '700', color: t.text, marginBottom: '10px', lineHeight: 1.4, textAlign }}>{article.title}</h3>
+        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted, lineHeight: 1.8, marginBottom: '16px', textAlign, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.excerpt}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: '#14b8a6', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0', transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = '#0d9488'} onMouseLeave={e => e.currentTarget.style.color = '#14b8a6'}
@@ -356,8 +358,9 @@ function ArticlesGrid() {
 
 // ─── Home Page ────────────────────────────────────────────────────────────────
 function Home() {
+  const { dir } = useLanguage()
   return (
-    <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh' }}>
+    <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh' }}>
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <Hero />
@@ -375,7 +378,7 @@ function ArticlePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t } = useTheme()
-  const { lang } = useLanguage()
+  const { lang, dir } = useLanguage()
   const [rawArticle, setRawArticle] = useState(undefined) // undefined = loading, null = not found
   const article = localizeArticle(rawArticle, lang)
 
@@ -387,7 +390,7 @@ function ArticlePage() {
 
   if (article === undefined) {
     return (
-      <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+      <div dir={dir} style={{ minHeight: '100vh', backgroundColor: t.bg }}>
         <Navbar />
         <main style={{ paddingTop: '140px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#9ca3af' }}>جارٍ التحميل...</p>
@@ -399,7 +402,7 @@ function ArticlePage() {
 
   if (!article) {
     return (
-      <div dir="rtl" style={{ minHeight: '100vh', backgroundColor: t.bg }}>
+      <div dir={dir} style={{ minHeight: '100vh', backgroundColor: t.bg }}>
         <Navbar />
         <main style={{ paddingTop: '140px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '18px', color: t.text }}>لم يتم العثور على المقال.</p>
@@ -413,7 +416,7 @@ function ArticlePage() {
   }
 
   return (
-    <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
+    <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <div style={{
@@ -426,8 +429,8 @@ function ArticlePage() {
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.25) 0%, rgba(4,51,76,0.85) 100%)' }} />
             </>
           )}
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 24px 40px', width: '100%', textAlign: 'right' }}>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginBottom: '14px' }}>
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 24px 40px', width: '100%', textAlign: dir === 'ltr' ? 'left' : 'right' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: dir === 'ltr' ? 'flex-start' : 'flex-end', marginBottom: '14px' }}>
               <span style={{ backgroundColor: '#14b8a6', color: '#fff', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '600' }}>{article.category}</span>
               {article.featured && <span style={{ backgroundColor: '#c8a96e', color: '#04334c', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '700' }}>مميز</span>}
             </div>
@@ -443,7 +446,7 @@ function ArticlePage() {
             {article.body.split('\n\n').map((para, i) => (
               <p key={i} style={{
                 fontFamily: 'Cairo, sans-serif', fontSize: '17px', color: t.textBody,
-                lineHeight: 2.1, marginBottom: '24px', textAlign: 'right',
+                lineHeight: 2.1, marginBottom: '24px', textAlign: dir === 'ltr' ? 'left' : 'right',
               }}>{para}</p>
             ))}
             <button onClick={() => navigate('/articles')} style={{

@@ -563,6 +563,8 @@ export function SectionHeader({ pill, title, centered = true }) {
 export function ArticleCard({ article }) {
   const [hovered, setHovered] = useState(false)
   const { t } = useTheme()
+  const { dir } = useLanguage()
+  const textAlign = dir === 'ltr' ? 'left' : 'right'
   const navigate = useNavigate()
   return (
     <div onClick={() => navigate(`/article/${article.id}`)} style={{
@@ -593,8 +595,8 @@ export function ArticleCard({ article }) {
           <span style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: '#9ca3af' }}>{article.date}</span>
           <span style={{ color: '#14b8a6' }}><CalendarIcon /></span>
         </div>
-        <h3 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '18px', fontWeight: '700', color: t.text, marginBottom: '10px', lineHeight: 1.4, textAlign: 'right' }}>{article.title}</h3>
-        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted, lineHeight: 1.8, marginBottom: '16px', textAlign: 'right', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.excerpt}</p>
+        <h3 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: '18px', fontWeight: '700', color: t.text, marginBottom: '10px', lineHeight: 1.4, textAlign }}>{article.title}</h3>
+        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textMuted, lineHeight: 1.8, marginBottom: '16px', textAlign, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.excerpt}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: '#14b8a6', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0', transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = '#0d9488'} onMouseLeave={e => e.currentTarget.style.color = '#14b8a6'}>

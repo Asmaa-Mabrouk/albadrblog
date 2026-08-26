@@ -168,7 +168,7 @@ function Newsletter() {
 export default function AboutMe() {
   const { t } = useTheme()
   const { get, getList } = usePageContent('about')
-  const { t: tr } = useLanguage()
+  const { t: tr, dir } = useLanguage()
   const introPara1 = get('about_intro_1', 'مدونتي والتي أدون بها بعض من تجاربي ومحطاتي في رحلة آمل أن تلهمك.')
   const introPara2 = get('about_intro_2', 'اسمي بدر بن حمود البدر، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.')
   const introPara3 = get('about_intro_3', 'بالنسبة لي، المواقف الصعبة هي مصدر تحفيز فأنا أجد متعتي بالعمل في فترات عدم اليقين، وأوقات التغيير السريع وأجدها فرصة لتحليل الواقع وتصور المستقبل وحل المشكلات.')
@@ -177,7 +177,7 @@ export default function AboutMe() {
   const hobbiesText = get('hobbies_text', 'خارج مكتبي، أمارس هوايتي بنفس الشغف الذي أمارس به عملي فالرياضة والاستكشاف جزء مهم من حياتي واعتبرها من أهم مكونات شخصيتي القيادية. أحب التمرين والسفر بالدراجة الهوائية، وأشارككم تفاصيل من بعض رحلاتي في المدونة. وعدت مؤخرًا لهواية قديمة وهي التصوير وأشارككم هنا بعض من لقطاتي (غالب صور الموقع من تصويري). كما أنني شغوف بنشر المعرفة عبر شبكات التواصل الاجتماعي وأحاضر في الفعاليات المتعلقة بتخصصي وخبراتي.')
   const awardsText = get('awards_text', 'نلت جوائزًا عديدة خلال مسيرتي القيادية، إذ صنفت ضمن: أفضل 100 رئيس تنفيذي في المنطقة، وضمن أقوى 20 مديرًا تنفيذيًا في مجال الضيافة بالمنطقة، ولثلاث مرات نالت شركات قدتها جائزة أفضل بيئة عمل في المملكة.')
   return (
-    <div dir="rtl" style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
+    <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto', padding: '48px 24px 80px' }}>
