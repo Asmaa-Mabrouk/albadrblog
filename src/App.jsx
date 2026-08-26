@@ -22,6 +22,17 @@ import Admin from './Admin'
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 function Hero() {
   const navigate = useNavigate()
+  const { lang, t: tr } = useLanguage()
+  const [rawFeatured, setRawFeatured] = useState(null)
+
+  useEffect(() => {
+    supabase.from('articles').select('*').order('featured', { ascending: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
+      if (data && data[0]) setRawFeatured(data[0])
+    })
+  }, [])
+
+  const featured = localizeArticle(rawFeatured, lang)
+
   return (
     <section style={{
       position: 'relative', width: '100%', minHeight: '100vh',
@@ -63,24 +74,28 @@ function Hero() {
             padding: '6px 18px', borderRadius: '999px',
             fontFamily: 'Cairo, sans-serif',
           }}>
-            أحدث المقالات
+            {tr('latest_article_pill')}
           </span>
         </div>
-        <h1 style={{
-          fontFamily: 'Playfair Display, Cairo, sans-serif',
-          fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: '700', color: '#04334c',
-          marginBottom: '20px', lineHeight: 1.3,
-          textShadow: '0 2px 12px rgba(255,255,255,0.6)',
-        }}>
-          هل أنت ضيف في المجلس؟
-        </h1>
-        <p style={{
-          fontFamily: 'Cairo, sans-serif', fontSize: '18px',
-          color: 'rgba(10,61,82,0.88)', maxWidth: '600px',
-          margin: '0 auto 32px', lineHeight: 1.8,
-        }}>
-          من منّا لم يقابل ذلك الحكيم الصامت؟ الذي يتأمل عميقًا وينصت كثيرًا، ولكنه إذا نطق أبهر السامعين بخبرته وأقنعهم بفكرته.
-        </p>
+        {featured && (
+          <>
+            <h1 style={{
+              fontFamily: 'Playfair Display, Cairo, sans-serif',
+              fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: '700', color: '#04334c',
+              marginBottom: '20px', lineHeight: 1.3,
+              textShadow: '0 2px 12px rgba(255,255,255,0.6)',
+            }}>
+              {featured.title}
+            </h1>
+            <p style={{
+              fontFamily: 'Cairo, sans-serif', fontSize: '18px',
+              color: 'rgba(10,61,82,0.88)', maxWidth: '600px',
+              margin: '0 auto 32px', lineHeight: 1.8,
+            }}>
+              {featured.excerpt}
+            </p>
+          </>
+        )}
         <button
           style={{
             backgroundColor: '#14b8a6', color: '#ffffff',
@@ -93,9 +108,9 @@ function Hero() {
           }}
           onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#0d9488'; e.currentTarget.style.transform = 'scale(1.04)' }}
           onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#14b8a6'; e.currentTarget.style.transform = 'scale(1)' }}
-          onClick={() => navigate('/articles')}
+          onClick={() => navigate(rawFeatured ? `/article/${rawFeatured.id}` : '/articles')}
         >
-          أكمل القراءة
+          {lang === 'en' ? 'Continue Reading' : 'أكمل القراءة'}
           <ArrowLeftIcon size={16} />
         </button>
       </div>
@@ -107,6 +122,7 @@ function Hero() {
 function BookFeature() {
   const [bookHovered, setBookHovered] = useState(false)
   const navigate = useNavigate()
+  const { t: tr } = useLanguage()
   return (
     <section style={{ backgroundColor: '#0a3d52', padding: '60px 0' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)' }}>
@@ -122,14 +138,14 @@ function BookFeature() {
               fontWeight: '700', color: '#ffffff',
               marginBottom: '20px', lineHeight: 1.3,
             }}>
-              سيرة غير ذاتية
+              {tr('book_title')}
             </h2>
             <p style={{
               fontFamily: 'Cairo, sans-serif', fontSize: '17px',
               color: 'rgba(255,255,255,0.80)', lineHeight: 1.85,
               marginBottom: '36px', maxWidth: '460px',
             }}>
-              قصص وتجارب ملهمة في النجاح المهني والقيادة في بيئتنا. قصص تجارب حقيقية ألهمت الكثيرين في رحلة النجاح.
+              {tr('book_teaser')}
             </p>
             <button
               style={{
@@ -145,7 +161,7 @@ function BookFeature() {
               onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#14b8a6'; e.currentTarget.style.transform = 'translateY(0)' }}
               onClick={() => navigate('/books')}
             >
-              عرض على الكتاب
+              {tr('view_book')}
               <ArrowLeftIcon size={15} />
             </button>
           </div>
@@ -161,7 +177,7 @@ function BookFeature() {
               fontFamily: 'Cairo, sans-serif',
               marginBottom: '28px', display: 'inline-block',
             }}>
-              الكتب
+              {tr('books_pill')}
             </span>
 
             {/* Ambient glow behind book */}
@@ -221,6 +237,7 @@ function Profile() {
   const navigate = useNavigate()
   const { t } = useTheme()
   const { get } = usePageContent('home')
+  const { t: tr } = useLanguage()
   const socials = [
     { icon: <EmailIcon />, label: 'البريد الإلكتروني' },
     { icon: <LinkedInIcon />, label: 'لينكد إن' },
@@ -245,7 +262,7 @@ function Profile() {
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         </div>
-        <span style={{ display: 'inline-block', backgroundColor: 'rgba(20,184,166,0.15)', color: '#0d7377', fontSize: '12px', fontWeight: '600', padding: '5px 14px', borderRadius: '999px', marginBottom: '16px', fontFamily: 'Cairo, sans-serif' }}>نبذة عني</span>
+        <span style={{ display: 'inline-block', backgroundColor: 'rgba(20,184,166,0.15)', color: '#0d7377', fontSize: '12px', fontWeight: '600', padding: '5px 14px', borderRadius: '999px', marginBottom: '16px', fontFamily: 'Cairo, sans-serif' }}>{tr('about_me_pill')}</span>
         <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: '700', color: t.text, marginBottom: '12px', transition: 'color 0.3s' }}>{get('profile_name', 'بدر بن حمود البدر')}</h2>
         <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#0d7377', letterSpacing: '0.08em', marginBottom: '32px' }}>{get('profile_title', 'عضو مجلس إدارة · مؤلف · متحدث رئيسي')}</p>
 
@@ -329,7 +346,7 @@ function ArticleCard({ article }) {
 
 function ArticlesGrid() {
   const { t } = useTheme()
-  const { lang } = useLanguage()
+  const { lang, t: tr } = useLanguage()
   const [articles, setArticles] = useState(null)
 
   useEffect(() => {
@@ -344,8 +361,8 @@ function ArticlesGrid() {
     <section style={{ backgroundColor: t.bg, padding: '80px 0', transition: 'background-color 0.3s' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <span style={{ display: 'inline-block', backgroundColor: 'rgba(20,184,166,0.12)', color: '#0d7377', fontSize: '13px', fontWeight: '600', padding: '5px 14px', borderRadius: '999px', marginBottom: '16px', fontFamily: 'Cairo, sans-serif' }}>المقالات</span>
-          <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(26px, 3.5vw, 36px)', fontWeight: '700', color: t.text, textAlign: 'center', marginBottom: '8px' }}>أحدث المقالات</h2>
+          <span style={{ display: 'inline-block', backgroundColor: 'rgba(20,184,166,0.12)', color: '#0d7377', fontSize: '13px', fontWeight: '600', padding: '5px 14px', borderRadius: '999px', marginBottom: '16px', fontFamily: 'Cairo, sans-serif' }}>{tr('articles_pill')}</span>
+          <h2 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(26px, 3.5vw, 36px)', fontWeight: '700', color: t.text, textAlign: 'center', marginBottom: '8px' }}>{tr('latest_articles_heading')}</h2>
           <div style={{ width: '40px', height: '3px', background: 'linear-gradient(to left, #c8a96e, #e8c98e)', borderRadius: '999px', margin: '0 auto' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>

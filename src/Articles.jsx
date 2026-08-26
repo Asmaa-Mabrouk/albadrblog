@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
 import profileAvatarImg from './assets/badr_profile.png'
 import { supabase } from './supabaseClient'
-import { useLanguage, localizeArticle } from './LanguageContext'
+import { useLanguage, localizeArticle, usePageContent } from './LanguageContext'
 
 const ALL_CATEGORY = 'الكل'
 
 // ─── Welcome section ──────────────────────────────────────────────────────────
 function WelcomeSection() {
   const { t } = useTheme()
+  const { t: tr, dir } = useLanguage()
+  const align = dir === 'ltr' ? 'left' : 'right'
+  const { get } = usePageContent('about')
+  const intro2 = get('about_intro_2', 'اسمي بدر بن حمود البدر، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.')
+  const intro3 = get('about_intro_3', 'بالنسبة لي، المواقف الصعبة هي مصدر تحفيز فأنا أجد متعتي بالعمل في فترات عدم اليقين، وأوقات التغيير السريع وأجدها فرصة لتحليل الواقع وتصور المستقبل وحل المشكلات.')
   return (
     <section style={{
       backgroundColor: t.bg,
@@ -59,13 +64,13 @@ function WelcomeSection() {
                 fontFamily: 'Cairo, sans-serif', fontSize: '13px',
                 color: '#14b8a6', fontWeight: '600',
               }}>
-                قائد · مؤلف · متحدث
+                {tr('role_tagline')}
               </p>
             </div>
           </div>
 
           {/* ── Right: Text column ── */}
-          <div style={{ flex: '1 1 340px', textAlign: 'right', position: 'relative' }}>
+          <div style={{ flex: '1 1 340px', textAlign: align, position: 'relative' }}>
 
             {/* Giant decorative quote mark */}
             <div style={{
@@ -83,12 +88,7 @@ function WelcomeSection() {
               lineHeight: 1.6, marginBottom: '28px',
               position: 'relative', zIndex: 1,
             }}>
-              أرحب بكم هنا في{' '}
-              <span style={{ color: '#14b8a6' }}>مدونتي</span>
-              {' '}والتي أدوّن بها بعضًا من{' '}
-              <span style={{ color: '#14b8a6' }}>تجاربي ومحطاتي</span>
-              {' '}في رحلة{' '}
-              <span style={{ color: '#c8a96e' }}>آمل أن تتكلل بالنجاح.</span>
+              {tr('welcome_heading')}
             </h2>
 
             {/* Gold thin divider */}
@@ -102,20 +102,18 @@ function WelcomeSection() {
             <p style={{
               fontFamily: 'Cairo, sans-serif',
               fontSize: '15px', color: t.textBody,
-              lineHeight: 1.95, marginBottom: '18px', textAlign: 'right',
+              lineHeight: 1.95, marginBottom: '18px', textAlign: align,
             }}>
-              اسمي <span style={{ fontWeight: '700', color: t.text }}>بدر بن حمود البدر</span>، مهتم بتمكين الشباب وقيادة التحول وريادة الأعمال، بالإضافة إلى توجيه المؤسسات ومساعدتها على إيجاد حلول مستدامة.
+              {intro2}
             </p>
 
             {/* Para 2 */}
             <p style={{
               fontFamily: 'Cairo, sans-serif',
               fontSize: '15px', color: t.textBody,
-              lineHeight: 1.95, marginBottom: '32px', textAlign: 'right',
+              lineHeight: 1.95, marginBottom: '32px', textAlign: align,
             }}>
-              بالنسبة لي، المواقف الصعبة هي{' '}
-              <span style={{ color: '#14b8a6', fontWeight: '600' }}>مصدر تحفيز</span>
-              ؛ فأنا أستمتع بالعمل في فترات عدم اليقين وفي أوقات التغيير السريع، وأجدها فرصة لتحليل الواقع وتصوّر المستقبل وحل المشكلات.
+              {intro3}
             </p>
 
             {/* Bottom accent line */}

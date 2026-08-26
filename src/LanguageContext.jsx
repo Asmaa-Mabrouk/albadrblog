@@ -26,6 +26,11 @@ export const translations = {
   about_career_heading: { ar: 'مجالاتي المهنية', en: 'My Professional Fields' },
   about_qualifications_heading: { ar: 'مؤهلاتي', en: 'My Qualifications' },
   about_hobbies_heading: { ar: 'هواياتي', en: 'My Hobbies' },
+  about_me_pill: { ar: 'نبذة عني', en: 'About Me' },
+  articles_pill: { ar: 'المقالات', en: 'Articles' },
+  latest_articles_heading: { ar: 'أحدث المقالات', en: 'Latest Articles' },
+  latest_article_pill: { ar: 'أحدث المقالات', en: 'Latest Article' },
+  continue_reading: { ar: 'أكمل القراءة', en: 'Continue Reading' },
   newsletter_heading: { ar: 'أسعد بالانضمام للقائمة البريدية لتصلك أحدث مقالاتي', en: 'Join my mailing list to get my latest articles' },
   newsletter_thanks: { ar: 'شكرًا على اشتراكك! سيصلك أول محتوى جديد قريبًا.', en: "Thanks for subscribing! You'll receive new content soon." },
   email_label: { ar: 'البريد الإلكتروني', en: 'Email' },
@@ -33,6 +38,12 @@ export const translations = {
   name_placeholder: { ar: 'اسمك', en: 'Your name' },
   join_now: { ar: 'انضم الآن', en: 'Join Now' },
   social_accounts_heading: { ar: 'حساباتي على مواقع التواصل الاجتماعي', en: 'My Social Media Accounts' },
+  book_title: { ar: 'سيرة غير ذاتية', en: 'An Unauthorized Autobiography' },
+  book_teaser: { ar: 'قصص وتجارب ملهمة في النجاح المهني والقيادة في بيئتنا. قصص تجارب حقيقية ألهمت الكثيرين في رحلة النجاح.', en: 'Inspiring stories and experiences in professional success and leadership. Real stories that have inspired many on the journey to success.' },
+  view_book: { ar: 'عرض على الكتاب', en: 'View the Book' },
+  books_pill: { ar: 'الكتب', en: 'Books' },
+  role_tagline: { ar: 'قائد · مؤلف · متحدث', en: 'Leader · Author · Speaker' },
+  welcome_heading: { ar: 'أرحب بكم هنا في مدونتي والتي أدوّن بها بعضًا من تجاربي ومحطاتي في رحلة آمل أن تتكلل بالنجاح.', en: 'Welcome to my blog, where I write about some of my experiences and milestones on a journey I hope will be crowned with success.' },
 }
 
 const LanguageContext = createContext(null)
