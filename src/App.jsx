@@ -42,13 +42,25 @@ function Hero() {
       backgroundColor: '#04141c',
       overflow: 'hidden',
     }}>
-      {/* Subtle static texture behind the card so the page never looks bare */}
+      {/* Page backdrop photo, dimmed, behind the card */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `url(${heroImg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: 0.35,
+      }} />
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(4,20,28,0.55) 0%, rgba(4,20,28,0.75) 100%)',
+      }} />
+      {/* Subtle color texture on top of the backdrop */}
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: 'radial-gradient(circle at 25% 30%, rgba(20,184,166,0.10) 0%, transparent 45%), radial-gradient(circle at 75% 70%, rgba(200,169,110,0.08) 0%, transparent 45%)',
       }} />
 
-      {/* Card: shows article info by default, reveals the photo on hover */}
+      {/* Card: article image always visible, zooms in slightly on hover */}
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -64,28 +76,24 @@ function Hero() {
           display: 'flex', alignItems: 'flex-end',
         }}
       >
-        {/* Base panel color (visible before/without hover) */}
+        {/* Base panel color, shows if the article has no image */}
         <div style={{
           position: 'absolute', inset: 0,
           background: 'linear-gradient(135deg, #0a3d52 0%, #04334c 60%, #072a3d 100%)',
         }} />
-        {/* Article photo — fades in on hover */}
+        {/* Article photo — always visible, zooms in gently on hover */}
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: `url(${bgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center 35%',
-          opacity: hovered ? 1 : 0,
-          transform: hovered ? 'scale(1.06)' : 'scale(1)',
-          transition: 'opacity 0.6s ease, transform 3s ease',
+          transform: hovered ? 'scale(1.08)' : 'scale(1)',
+          transition: 'transform 0.6s ease',
         }} />
-        {/* Overlay that keeps text legible whether or not the photo is showing */}
+        {/* Overlay that keeps text legible over the photo */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: hovered
-            ? 'linear-gradient(to top, rgba(4,20,28,0.92) 0%, rgba(4,20,28,0.55) 45%, rgba(4,20,28,0.25) 100%)'
-            : 'linear-gradient(to top, rgba(4,20,28,0.35) 0%, rgba(4,20,28,0.15) 100%)',
-          transition: 'background 0.5s ease',
+          background: 'linear-gradient(to top, rgba(4,20,28,0.92) 0%, rgba(4,20,28,0.6) 45%, rgba(4,20,28,0.3) 100%)',
         }} />
         {/* Thin gold/teal accent line, top */}
         <div style={{
