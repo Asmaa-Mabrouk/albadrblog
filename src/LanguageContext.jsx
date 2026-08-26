@@ -48,27 +48,35 @@ export const translations = {
 
 const LanguageContext = createContext(null)
 
+// The language switcher feature has been removed — the site is Arabic-only.
+// This is kept as a fixed 'ar' value (rather than deleting the context
+// entirely) because many components still call useLanguage()/usePageContent()
+// for translated static labels and admin-editable page content; keeping the
+// language locked to 'ar' makes all of that resolve to the Arabic text with
+// no further changes needed elsewhere.
 export function LanguageProvider({ children }) {
-  const [lang, setLangState] = useState(() => localStorage.getItem('site_lang') || 'ar')
+  const lang = 'ar'
 
   useEffect(() => {
-    localStorage.setItem('site_lang', lang)
-  }, [lang])
+    // Clear any previously saved 'en' preference from before the switcher
+    // was removed, so nothing can accidentally resurface it.
+    localStorage.removeItem('site_lang')
+  }, [])
 
-  function setLang(next) {
-    setLangState(next)
+  function setLang() {
+    // No-op: language switching is disabled.
   }
 
   function toggleLang() {
-    setLangState(l => (l === 'ar' ? 'en' : 'ar'))
+    // No-op: language switching is disabled.
   }
 
   function t(key) {
-    return translations[key] ? translations[key][lang] : key
+    return translations[key] ? translations[key].ar : key
   }
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t, dir: lang === 'en' ? 'ltr' : 'rtl' }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t, dir: 'rtl' }}>
       {children}
     </LanguageContext.Provider>
   )
