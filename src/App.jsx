@@ -41,17 +41,17 @@ function Hero() {
       backgroundColor: '#04141c',
       overflow: 'hidden',
     }}>
-      {/* Page backdrop photo, dimmed, behind the card */}
+      {/* Page backdrop photo, near full color, behind the card */}
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: `url(${heroImg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.35,
+        opacity: 0.9,
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.55) 100%)',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.25) 100%)',
       }} />
       {/* Subtle color texture on top of the backdrop */}
       <div style={{
