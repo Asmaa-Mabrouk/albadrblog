@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Navbar, Footer, EmailIcon, LinkedInIcon, YouTubeIcon, TwitterIcon, useTheme } from './shared'
-import profileAvatarImg from './assets/badr_profile.png'
+import profileAvatarImg from './assets/badr_profile.webp'
 import { usePageContent, useLanguage } from './LanguageContext'
 
 const socials = [

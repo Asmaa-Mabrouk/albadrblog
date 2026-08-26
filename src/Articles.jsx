@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArticleCard, Newsletter, ArrowLeftIcon, useTheme } from './shared'
-import profileAvatarImg from './assets/badr_profile.png'
+import profileAvatarImg from './assets/badr_profile.webp'
 import { supabase } from './supabaseClient'
 import { useLanguage, localizeArticle, usePageContent } from './LanguageContext'
 

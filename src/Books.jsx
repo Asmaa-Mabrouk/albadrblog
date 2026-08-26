@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Navbar, Footer, PageHero, SectionHeader, ArrowLeftIcon, LinkedInIcon, TwitterIcon, useTheme } from './shared'
-import bookCoverImg from './assets/book_cover.png'
-import padWithHandImg from './assets/pad_with_hand.png'
-import profileAvatarImg from './assets/badr_profile.png'
+import bookCoverImg from './assets/book_cover.webp'
+import padWithHandImg from './assets/pad_with_hand.webp'
+import profileAvatarImg from './assets/badr_profile.webp'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const ExternalLinkIcon = ({ size = 16 }) => (
