@@ -74,6 +74,38 @@ function LoginScreen() {
   )
 }
 
+function compressImage(file, maxDimension = 1600, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const reader = new FileReader()
+    reader.onload = () => { img.src = reader.result }
+    reader.onerror = reject
+    img.onload = () => {
+      let { width, height } = img
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = Math.round(height * (maxDimension / width))
+          width = maxDimension
+        } else {
+          width = Math.round(width * (maxDimension / height))
+          height = maxDimension
+        }
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      canvas.toBlob(
+        blob => blob ? resolve(blob) : reject(new Error('Compression failed')),
+        'image/jpeg',
+        quality
+      )
+    }
+    img.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 // ─── Article form ────────────────────────────────────────────────────────────
 function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
   const [form, setForm] = useState(initial)
@@ -458,8 +490,9 @@ function Dashboard({ userEmail }) {
     try {
       let imgPath = form.img || ''
       if (imageFile) {
-        const filename = `${Date.now()}-${sanitizeFilename(imageFile.name)}`
-        const { error: uploadError } = await supabase.storage.from(IMAGES_BUCKET).upload(filename, imageFile)
+        const compressed = await compressImage(imageFile)
+        const filename = `${Date.now()}-${sanitizeFilename(imageFile.name).replace(/\.[^.]+$/, '')}.jpg`
+        const { error: uploadError } = await supabase.storage.from(IMAGES_BUCKET).upload(filename, compressed, { contentType: 'image/jpeg' })
         if (uploadError) throw uploadError
         const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(filename)
         imgPath = urlData.publicUrl

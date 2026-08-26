@@ -610,7 +610,7 @@ function ArticlePage() {
 
           {article.img && (
             <div style={{ maxWidth: '740px', margin: '24px auto 0', padding: '0 24px' }}>
-              <img src={article.img} alt={article.title} loading="lazy" style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }} />
+              <img src={article.img} alt={article.title} loading="eager" fetchPriority="high" style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }} />
             </div>
           )}
 
