@@ -597,29 +597,33 @@ function ArticlePage() {
     <div dir={dir} style={{ overflowX: 'hidden', minHeight: '100vh', backgroundColor: t.bg }}>
       <Navbar />
       <main style={{ paddingTop: '64px' }}>
-        <div style={{
-          height: '360px', background: article.bg, position: 'relative',
-          display: 'flex', alignItems: 'flex-end', overflow: 'hidden',
-        }}>
-          {article.img && (
-            <>
-              <img src={article.img} alt={article.title} loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(4,51,76,0.25) 0%, rgba(4,51,76,0.85) 100%)' }} />
-            </>
-          )}
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 24px 40px', width: '100%', textAlign: dir === 'ltr' ? 'left' : 'right' }}>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: dir === 'ltr' ? 'flex-start' : 'flex-end', marginBottom: '14px' }}>
-              <span style={{ backgroundColor: '#14b8a6', color: '#fff', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '600' }}>{article.category}</span>
-              {article.featured && <span style={{ backgroundColor: '#c8a96e', color: '#04334c', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '700' }}>مميز</span>}
-            </div>
-            <h1 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 4vw, 38px)', fontWeight: '700', color: '#fff', lineHeight: 1.4, marginBottom: '10px' }}>
+        <section style={{ padding: '48px 0 0' }}>
+          <div style={{ maxWidth: '740px', margin: '0 auto', padding: '0 24px', textAlign: dir === 'ltr' ? 'left' : 'right' }}>
+            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', color: '#14b8a6', fontWeight: '600', marginBottom: '12px' }}>
+              المدونة، مقالاتي
+            </p>
+            <h1 style={{ fontFamily: 'Playfair Display, Cairo, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: '700', color: t.text, lineHeight: 1.4, marginBottom: '6px' }}>
               {article.title}
             </h1>
-            <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>{article.date}</p>
+            <div style={{ width: '48px', height: '3px', backgroundColor: '#14b8a6', margin: dir === 'ltr' ? '16px 0' : '16px 0 16px auto' }} />
           </div>
-        </div>
 
-        <section style={{ padding: '56px 0 80px' }}>
+          {article.img && (
+            <div style={{ maxWidth: '740px', margin: '24px auto 0', padding: '0 24px' }}>
+              <img src={article.img} alt={article.title} loading="lazy" style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }} />
+            </div>
+          )}
+
+          <div style={{ maxWidth: '740px', margin: '0 auto', padding: '32px 24px 0' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: dir === 'ltr' ? 'flex-start' : 'flex-end', marginBottom: '24px' }}>
+              <span style={{ backgroundColor: 'rgba(20,184,166,0.12)', color: '#0d7377', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '600' }}>{article.category}</span>
+              {article.featured && <span style={{ backgroundColor: 'rgba(200,169,110,0.15)', color: '#8a6d2f', padding: '5px 14px', borderRadius: '999px', fontSize: '13px', fontFamily: 'Cairo, sans-serif', fontWeight: '700' }}>مميز</span>}
+              <span style={{ color: t.textMuted, fontSize: '13px', fontFamily: 'Cairo, sans-serif', alignSelf: 'center' }}>{article.date}</span>
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: '0 0 80px' }}>
           <div style={{ maxWidth: '740px', margin: '0 auto', padding: '0 24px' }}>
             {/^\s*</.test(article.body) ? (
               // Rich text (HTML) written via the admin's editor
