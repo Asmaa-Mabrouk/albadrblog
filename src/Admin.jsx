@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import ReactQuill from 'react-quill-new'
+import 'react-quill-new/dist/quill.snow.css'
 import { supabase } from './supabaseClient'
 import { CATEGORY_TRANSLATIONS } from './LanguageContext'
 
@@ -145,8 +147,23 @@ function ArticleForm({ initial, categories, onCancel, onSave, saving }) {
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={labelStyle}>{formLang === 'ar' ? 'نص المقال الكامل (افصل بين الفقرات بسطر فارغ)' : 'Full article body (blank line between paragraphs)'}</label>
-        <textarea dir={formLang === 'ar' ? 'rtl' : 'ltr'} rows={8} style={{ ...inputStyle, resize: 'vertical' }} value={form[`body${suf}`] || ''} onChange={e => setForm({ ...form, [`body${suf}`]: e.target.value })} />
+        <label style={labelStyle}>{formLang === 'ar' ? 'نص المقال الكامل' : 'Full article body'}</label>
+        <div dir={formLang === 'ar' ? 'rtl' : 'ltr'} className={formLang === 'ar' ? 'ql-rtl' : ''}>
+          <ReactQuill
+            theme="snow"
+            value={form[`body${suf}`] || ''}
+            onChange={val => setForm({ ...form, [`body${suf}`]: val })}
+            modules={{
+              toolbar: [
+                [{ header: [2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'blockquote'],
+                ['clean'],
+              ],
+            }}
+          />
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>

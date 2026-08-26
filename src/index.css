@@ -142,3 +142,24 @@ img {
   body { background: #fff; color: #000; direction: rtl; }
   nav, footer, button { display: none !important; }
 }
+
+/* Quill rich text editor — RTL support for the admin article editor */
+.ql-rtl .ql-editor {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Rendered article body (from the rich text editor) */
+.article-body-rtl p, .article-body-ltr p { margin: 0 0 24px; }
+.article-body-rtl ul, .article-body-ltr ul,
+.article-body-rtl ol, .article-body-ltr ol { margin: 0 0 24px; padding-inline-start: 24px; }
+.article-body-rtl blockquote, .article-body-ltr blockquote {
+  border-inline-start: 3px solid #14b8a6;
+  padding-inline-start: 16px;
+  margin: 0 0 24px;
+  color: inherit;
+  opacity: 0.85;
+}
+.article-body-rtl h2, .article-body-ltr h2 { font-size: 1.4em; font-weight: 700; margin: 32px 0 16px; }
+.article-body-rtl h3, .article-body-ltr h3 { font-size: 1.2em; font-weight: 700; margin: 28px 0 14px; }
+.article-body-rtl a, .article-body-ltr a { color: #14b8a6; }

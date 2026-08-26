@@ -460,12 +460,25 @@ function ArticlePage() {
 
         <section style={{ padding: '56px 0 80px' }}>
           <div style={{ maxWidth: '740px', margin: '0 auto', padding: '0 24px' }}>
-            {article.body.split('\n\n').map((para, i) => (
-              <p key={i} style={{
-                fontFamily: 'Cairo, sans-serif', fontSize: '17px', color: t.textBody,
-                lineHeight: 2.1, marginBottom: '24px', textAlign: dir === 'ltr' ? 'left' : 'right',
-              }}>{para}</p>
-            ))}
+            {/^\s*</.test(article.body) ? (
+              // Rich text (HTML) written via the admin's editor
+              <div
+                className={dir === 'ltr' ? 'article-body-ltr' : 'article-body-rtl'}
+                style={{
+                  fontFamily: 'Cairo, sans-serif', fontSize: '17px', color: t.textBody,
+                  lineHeight: 2.1, textAlign: dir === 'ltr' ? 'left' : 'right',
+                }}
+                dangerouslySetInnerHTML={{ __html: article.body }}
+              />
+            ) : (
+              // Plain text (older articles saved before the rich text editor)
+              article.body.split('\n\n').map((para, i) => (
+                <p key={i} style={{
+                  fontFamily: 'Cairo, sans-serif', fontSize: '17px', color: t.textBody,
+                  lineHeight: 2.1, marginBottom: '24px', textAlign: dir === 'ltr' ? 'left' : 'right',
+                }}>{para}</p>
+              ))
+            )}
             <button onClick={() => navigate('/articles')} style={{
               marginTop: '20px', background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: '#14b8a6', fontWeight: '700',
