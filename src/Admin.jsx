@@ -435,9 +435,17 @@ function Dashboard({ userEmail }) {
 
   async function load() {
     setError('')
-    const { data, error } = await supabase.from('articles').select('*').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false })
+    const { data, error } = await supabase.from('articles').select('id, title, category, excerpt, date, sort_date, featured, bg, img, title_en, excerpt_en, date_en').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false })
     if (error) setError(error.message)
     else setArticles(data)
+  }
+
+  async function startEditing(articleSummary) {
+    // The list query omits body/body_en to keep the dashboard fast — fetch
+    // the full row now that we actually need it for the edit form.
+    const { data, error } = await supabase.from('articles').select('*').eq('id', articleSummary.id).maybeSingle()
+    if (error) { setError(error.message); return }
+    setEditing(data)
   }
 
   useEffect(() => { load() }, [])
@@ -579,7 +587,7 @@ function Dashboard({ userEmail }) {
                       <p style={{ fontWeight: '700', color: '#111827', fontSize: '14px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{article.title}</p>
                       <p style={{ fontSize: '12px', color: '#6b7280' }}>{article.category} · {article.date}{article.featured ? ' · مميز' : ''}</p>
                     </div>
-                    <button style={buttonSecondary} onClick={() => setEditing(article)}>تعديل</button>
+                    <button style={buttonSecondary} onClick={() => startEditing(article)}>تعديل</button>
                     <button style={buttonDanger} onClick={() => handleDelete(article)}>حذف</button>
                   </div>
                 ))}

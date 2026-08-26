@@ -31,7 +31,7 @@ function Hero() {
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('featured', { ascending: false }).order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
+    supabase.from('articles').select('id, title, category, excerpt, date, sort_date, featured, bg, img, title_en, excerpt_en, date_en').order('featured', { ascending: false }).order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(1).then(({ data }) => {
       if (data && data[0]) setRawFeatured(data[0])
     })
   }, [])
@@ -395,7 +395,7 @@ function ArticlesGrid() {
   const [articles, setArticles] = useState(null)
 
   useEffect(() => {
-    supabase.from('articles').select('*').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(6).then(({ data }) => {
+    supabase.from('articles').select('id, title, category, excerpt, date, sort_date, featured, bg, img, title_en, excerpt_en, date_en').order('sort_date', { ascending: false, nullsFirst: false }).order('id', { ascending: false }).limit(6).then(({ data }) => {
       setArticles(data || [])
     })
   }, [])
