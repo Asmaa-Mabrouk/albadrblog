@@ -94,7 +94,7 @@ function Hero() {
         {/* Overlay — dark wash that keeps text legible over the photo */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to top, rgba(4,20,28,0.92) 0%, rgba(4,20,28,0.6) 45%, rgba(4,20,28,0.3) 100%)',
+          background: 'linear-gradient(to top, rgba(4,20,28,0.75) 0%, rgba(4,20,28,0.45) 45%, rgba(4,20,28,0.15) 100%)',
         }} />
         {/* Thin gold/teal accent line, top */}
         <div style={{
