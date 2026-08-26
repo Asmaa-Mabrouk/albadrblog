@@ -67,6 +67,8 @@ function Newsletter() {
   const [name, setName] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const { t } = useTheme()
+  const { t: tr, dir } = useLanguage()
+  const align = dir === 'ltr' ? 'left' : 'right'
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -83,8 +85,8 @@ function Newsletter() {
     padding: '10px 14px',
     outline: 'none',
     width: '100%',
-    textAlign: 'right',
-    direction: 'rtl',
+    textAlign: align,
+    direction: dir,
     boxSizing: 'border-box',
   }
 
@@ -97,22 +99,22 @@ function Newsletter() {
         color: t.text,
         marginBottom: '18px',
       }}>
-        أسعد بالانضمام للقائمة البريدية لتصلك أحدث مقالاتي
+        {tr('newsletter_heading')}
       </p>
 
       {submitted ? (
         <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '15px', color: '#14b8a6' }}>
-          شكرًا على اشتراكك! سيصلك أول محتوى جديد قريبًا.
+          {tr('newsletter_thanks')}
         </p>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px' }}>
           <div>
             <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
-              البريد الإلكتروني
+              {tr('email_label')}
             </label>
             <input
               type="email"
-              placeholder="البريد الإلكتروني"
+              placeholder={tr('email_label')}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -124,11 +126,11 @@ function Newsletter() {
           </div>
           <div>
             <label style={{ fontFamily: 'Cairo, sans-serif', fontSize: '14px', color: t.textBody, display: 'block', marginBottom: '4px' }}>
-              الاسم
+              {tr('name_label')}
             </label>
             <input
               type="text"
-              placeholder="اسمك"
+              placeholder={tr('name_placeholder')}
               value={name}
               onChange={e => setName(e.target.value)}
               required
@@ -155,7 +157,7 @@ function Newsletter() {
               onMouseEnter={e => e.currentTarget.style.backgroundColor = '#0d9488'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#14b8a6'}
             >
-              انضم الآن
+              {tr('join_now')}
             </button>
           </div>
         </form>
@@ -318,7 +320,7 @@ export default function AboutMe() {
               color: t.text,
               marginBottom: '16px',
             }}>
-              حساباتي على مواقع التواصل الاجتماعي
+              {tr('social_accounts_heading')}
             </p>
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
               {socials.map((s) => (

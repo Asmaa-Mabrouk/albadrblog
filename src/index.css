@@ -68,8 +68,6 @@
 /* ─── Body ────────────────────────────────────────────────────────────────── */
 body {
   font-family: var(--font-body);
-  direction: rtl;
-  text-align: right;
   overflow-x: hidden;
   background: var(--color-bg);
   color: var(--color-text);
@@ -86,10 +84,16 @@ html {
   max-width: 100%;
 }
 
-/* ─── RTL utilities ───────────────────────────────────────────────────────── */
+/* ─── Direction utilities ─────────────────────────────────────────────────── */
+/* text-align/direction now follow whichever dir="ltr"/"rtl" the page sets,
+   instead of being hardcoded to rtl — needed for the English language mode. */
 [dir="rtl"] {
   direction: rtl;
   text-align: right;
+}
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
 }
 
 /* ─── WordPress compatibility helpers ────────────────────────────────────── */

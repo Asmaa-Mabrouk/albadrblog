@@ -26,6 +26,13 @@ export const translations = {
   about_career_heading: { ar: 'مجالاتي المهنية', en: 'My Professional Fields' },
   about_qualifications_heading: { ar: 'مؤهلاتي', en: 'My Qualifications' },
   about_hobbies_heading: { ar: 'هواياتي', en: 'My Hobbies' },
+  newsletter_heading: { ar: 'أسعد بالانضمام للقائمة البريدية لتصلك أحدث مقالاتي', en: 'Join my mailing list to get my latest articles' },
+  newsletter_thanks: { ar: 'شكرًا على اشتراكك! سيصلك أول محتوى جديد قريبًا.', en: "Thanks for subscribing! You'll receive new content soon." },
+  email_label: { ar: 'البريد الإلكتروني', en: 'Email' },
+  name_label: { ar: 'الاسم', en: 'Name' },
+  name_placeholder: { ar: 'اسمك', en: 'Your name' },
+  join_now: { ar: 'انضم الآن', en: 'Join Now' },
+  social_accounts_heading: { ar: 'حساباتي على مواقع التواصل الاجتماعي', en: 'My Social Media Accounts' },
 }
 
 const LanguageContext = createContext(null)
