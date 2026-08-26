@@ -469,7 +469,7 @@ export function PageHero({ pill, heading, subtitle }) {
           marginBottom: '10px', lineHeight: 1.25,
           textShadow: '0 2px 16px rgba(0,0,0,0.35)',
         }}>{heading}</h1>
-        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '18px', color: 'rgba(255,255,255,0.70)' }}>
+        <p style={{ fontFamily: 'Cairo, sans-serif', fontSize: '18px', color: 'rgba(255,255,255,0.88)' }}>
           {subtitle}
         </p>
       </div>

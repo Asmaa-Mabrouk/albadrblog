@@ -170,7 +170,7 @@ function MainBookFeature() {
             <p style={{
               fontFamily: 'Playfair Display, Cairo, sans-serif',
               fontSize: 'clamp(15px, 1.8vw, 18px)',
-              color: 'rgba(255,255,255,0.70)',
+              color: 'rgba(255,255,255,0.88)',
               lineHeight: 1.6, marginBottom: '8px',
             }}>
               لكل شاب يطمح للنجاح في حياته المهنية ..
@@ -180,7 +180,7 @@ function MainBookFeature() {
             <p style={{
               fontFamily: 'Cairo, sans-serif',
               fontSize: '14px',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.78)',
               lineHeight: 1.8, marginBottom: '20px',
               maxWidth: '440px',
             }}>
